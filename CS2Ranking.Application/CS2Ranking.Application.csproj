@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\CS2Ranking.Domain\CS2Ranking.Domain.csproj" />
+		<ProjectReference Include="..\CS2Ranking.Infrastructure\CS2Ranking.Infrastructure.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.13">
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		  <PrivateAssets>all</PrivateAssets>
+	  </PackageReference>
+  </ItemGroup>
+</Project>

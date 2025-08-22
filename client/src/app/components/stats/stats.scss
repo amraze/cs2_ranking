@@ -1,0 +1,26 @@
+.header {
+    margin: 0;
+    color: #E58716;
+    letter-spacing: 1px;
+}
+
+.section-container {
+    height: 90vh;
+    width: 100%;
+    transition: width 0.3s ease;
+    overflow: auto;
+    overflow-x: hidden;
+    border-radius: 15px;
+}
+
+.header select {
+    background: #E58716;
+    border: 0;
+    color: white;
+    border-radius: 15px;
+}
+
+.content {
+    overflow: auto;
+    border-radius: 15px;
+}

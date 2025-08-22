@@ -1,0 +1,26 @@
+.img-map {
+    object-fit: cover;
+}
+
+.card-header {
+    text-align: center;
+    background: rgba(30, 30, 30, 1);
+    color: white;
+    border-radius: 15px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    font-weight: bold;
+    font-size: 24px;
+    letter-spacing: 1px;
+    padding: 15px;
+}
+
+.map_performance--body .map>div {
+    text-align: center;
+    background: rgba(30, 30, 30, 0.75);
+    color: white;
+    border-radius: 15px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    padding-bottom: 10px;
+}

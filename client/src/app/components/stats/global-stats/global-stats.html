@@ -1,0 +1,87 @@
+<div class="global_stats">
+    <div class="global_stats--header card-header">
+        GLOBAL STATS
+    </div>
+    <div class="global_stats--body">
+        <div class="global_stats--content">
+            <div class="stats1">
+                <div class="row">
+                    <div class="col-xl-6 col-xxl-3 map">
+                        <div class="title">ADR</div>
+                        <div class="value fs-2">73.3</div>
+                    </div>
+                    <div class="col-xl-6 col-xxl-3 map">
+                        <div class="title">K/D</div>
+                        <div class="value fs-2">73.3</div>
+                    </div>
+                    <div class="col-xl-6 col-xxl-3 map">
+                        <div class="title">HSP</div>
+                        <div class="value fs-2">73.3</div>
+                    </div>
+                    <div class="col-xl-6 col-xxl-3 map">
+                        <div class="title">WIN%</div>
+                        <div class="value fs-2">73.3</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-5">
+                        <app-chart [chartType]="'doughnut'" [chartData]="winRateData" [chartOptions]="winRateOptions">
+                        </app-chart>
+                    </div>
+                    <div class="col-7 pt-4 d-flex align-items-center flex-column">
+                        <div class="title fs-5">Current Rank</div>
+                        <div class="rank text-center ps-2 fw-bold">
+                            <i>{{ 2650 | number }}</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="stats2 kad">
+                <div class="row">
+                    <div class="col-4">
+                        <div class="title">KILLS</div>
+                        <div class="value fs-2">73.3</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="title">DEATHS</div>
+                        <div class="value fs-2">73.3</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="title">ASSISTS</div>
+                        <div class="value fs-2">73.3</div>
+                    </div>
+                </div>
+            </div>
+            <div class="stats3">
+                <div class="row">
+                    <div class="col-8">
+                        <div>
+                            <app-chart [chartType]="'radar'" [chartData]="mapData" [chartOptions]="mapOptions">
+                            </app-chart>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="d-flex flex-column h-100 justify-content-evenly">
+                            <div>
+                                <div class="title">TOTAL GAMES</div>
+                                <div class="value fs-2">167</div>
+                            </div>
+                            <div>
+                                <div class="title">AVG SCORE</div>
+                                <div class="value fs-2">73.3</div>
+                            </div>
+                            <div>
+                                <div class="title">AVG MVPs</div>
+                                <div class="value fs-2">73.3</div>
+                            </div>
+                            <div>
+                                <div class="title">MOST KILLS</div>
+                                <div class="value fs-2">73.3</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

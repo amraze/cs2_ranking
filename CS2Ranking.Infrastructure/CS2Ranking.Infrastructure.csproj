@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\CS2Ranking.Domain\CS2Ranking.Domain.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Bogus" Version="35.6.3" />
+		<PackageReference Include="EFCore.NamingConventions" Version="8.0.2" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.13" />
+		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.3" />
+	</ItemGroup>
+
+</Project>

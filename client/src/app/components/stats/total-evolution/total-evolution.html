@@ -1,0 +1,47 @@
+<div class="total_evolution">
+    <div class="total_evolution--header card-header">
+        TOTAL EVOLUTION
+    </div>
+    <div class="total_evolution--body">
+        <div class="total_evolution--content">
+            <div class="row px-3">
+                <div class="col-xl-4 col-xxl-3 map">
+                    <div class="d-flex justify-content-between pt-3">
+                        <div class="title">ADR</div>
+                    </div>
+                    <div class="value fs-2">
+                        <app-chart [chartType]="'line'" [chartData]="mapData" [chartOptions]="sharedOptions">
+                        </app-chart>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-xxl-3 map">
+                    <div class="d-flex justify-content-between pt-3">
+                        <div class="title">K/D</div>
+                    </div>
+                    <div class="value fs-2">
+                        <app-chart [chartType]="'line'" [chartData]="mapData" [chartOptions]="sharedOptions">
+                        </app-chart>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-xxl-3 map">
+                    <div class="d-flex justify-content-between pt-3">
+                        <div class="title">RANK</div>
+                    </div>
+                    <div class="value fs-2">
+                        <app-chart [chartType]="'line'" [chartData]="mapData" [chartOptions]="sharedOptions">
+                        </app-chart>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-xxl-3 map">
+                    <div class="d-flex justify-content-between pt-3">
+                        <div class="title">WIN %</div>
+                    </div>
+                    <div class="value fs-2">
+                        <app-chart [chartType]="'line'" [chartData]="mapData" [chartOptions]="sharedOptions">
+                        </app-chart>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
