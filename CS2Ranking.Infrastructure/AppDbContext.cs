@@ -3,14 +3,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CS2Ranking.Infrastructure
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options)
-            : base(options)
-        {
-        }
-
         public DbSet<Map> Map { get; set; }
+        public DbSet<Match> Match { get; set; }
         public DbSet<Season> Season { get; set; }
         public DbSet<Rank> Rank { get; set; }
     }

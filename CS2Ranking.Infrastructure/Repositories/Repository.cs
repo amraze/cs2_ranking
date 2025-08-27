@@ -29,6 +29,13 @@ namespace CS2Ranking.Infrastructure.Repositories
             return entity;
         }
 
+        public async Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities)
+        {
+            await _dbSet.AddRangeAsync(entities);
+            await _context.SaveChangesAsync();
+            return entities;
+        }
+
         public async Task UpdateAsync(T entity)
         {
             _dbSet.Update(entity);
@@ -38,6 +45,13 @@ namespace CS2Ranking.Infrastructure.Repositories
         public async Task DeleteAsync(T entity)
         {
             _dbSet.Remove(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteAllAsync()
+        {
+            var allEntities = await _dbSet.ToListAsync();
+            _dbSet.RemoveRange(allEntities);
             await _context.SaveChangesAsync();
         }
     }

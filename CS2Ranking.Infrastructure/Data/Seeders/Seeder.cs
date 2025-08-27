@@ -1,24 +1,25 @@
-﻿using CS2Ranking.Infrastructure.Data.Factories;
-using CS2Ranking.Infrastructure.Data.Seeders;
-using CS2Ranking.Infrastructure;
+﻿using CS2Ranking.Domain.Factories;
 
-public static class Seeder
+namespace CS2Ranking.Infrastructure.Data.Seeders
 {
-    public static void Run(AppDbContext context)
+    public static class Seeder
     {
-        // Maps Seeding
-        var mapFactory = new MapFactory();
-        var mapSeeder = new MapSeeder(mapFactory, context);
-        mapSeeder.Seed();
+        public static void Run(AppDbContext context)
+        {
+            // Maps Seeding
+            var mapFactory = new MapFactory();
+            var mapSeeder = new MapSeeder(mapFactory, context);
+            mapSeeder.Seed();
 
-        // Ranks Seeding
-        var rankFactory = new RankFactory();
-        var rankSeeder = new RankSeeder(rankFactory, context);
-        rankSeeder.Seed();
+            // Ranks Seeding
+            var rankFactory = new RankFactory();
+            var rankSeeder = new RankSeeder(rankFactory, context);
+            rankSeeder.Seed();
 
-        // Seasons Seeding
-        var seasonFactory = new SeasonFactory();
-        var seasonSeeder = new SeasonSeeder(seasonFactory, context);
-        seasonSeeder.Seed();
+            // Seasons Seeding
+            var seasonFactory = new SeasonFactory();
+            var seasonSeeder = new SeasonSeeder(seasonFactory, context);
+            seasonSeeder.Seed();
+        }
     }
 }

@@ -1,5 +1,5 @@
 using CS2Ranking.Application.Dtos;
-using CS2Ranking.Domain.Interfaces;
+using CS2Ranking.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CS2Ranking.Application.Controllers
@@ -11,11 +11,11 @@ namespace CS2Ranking.Application.Controllers
         private readonly IMatchService _matchService = matchService;
 
         [HttpPost("import")]
-        public async Task<IActionResult> ImportMatches([FromBody] string request)
+        public async Task<IActionResult> ImportMatches([FromBody] GoogleSheetRequestDto request)
         {
             try
             {
-                await _matchService.ImportFromSheetAsync(request);
+                await _matchService.ImportFromSheetAsync(request.SheetLink);
                 return Ok(); 
             }
             catch (Exception ex)

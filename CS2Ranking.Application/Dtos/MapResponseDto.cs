@@ -1,7 +1,8 @@
-﻿namespace CS2Ranking.Domain.Entities
+﻿namespace CS2Ranking.Application.Dtos
 {
-    public class Map : Entity
+    public class MapResponseDto
     {
+        public int Id { get; set; }
         public required string Name { get; set; }
         public required string PicturePath { get; set; }
     }

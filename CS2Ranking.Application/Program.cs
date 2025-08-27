@@ -1,4 +1,6 @@
+using CS2Ranking.Application;
 using CS2Ranking.Infrastructure;
+using CS2Ranking.Infrastructure.Data.Seeders;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +26,8 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure();
 builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();

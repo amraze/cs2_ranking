@@ -2,6 +2,6 @@
 {
     public interface IGoogleSheetsService
     {
-        Task GetSheetDataAsync(string sheetLink);
+        Task<List<List<string>>> GetSheetDataAsync(string sheetLink);
     }
 }

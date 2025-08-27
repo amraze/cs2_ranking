@@ -1,15 +1,12 @@
 using Bogus;
 using CS2Ranking.Domain.Entities;
 
-namespace CS2Ranking.Infrastructure.Data.Factories
+namespace CS2Ranking.Domain.Factories
 {
     public class MapFactory
     {
         private readonly Faker _faker = new Faker();
-        public Map Create(
-            string? name = null, 
-            string? picturePath = null
-        )
+        public Map Create(string? name = null, string? picturePath = null)
         {
             return new Map
             {

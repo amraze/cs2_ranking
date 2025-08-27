@@ -1,7 +1,7 @@
 using Bogus;
 using CS2Ranking.Domain.Entities;
 
-namespace CS2Ranking.Infrastructure.Data.Factories
+namespace CS2Ranking.Domain.Factories
 {
     public class SeasonFactory
     {

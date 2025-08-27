@@ -1,4 +1,4 @@
-using CS2Ranking.Infrastructure.Data.Factories;
+using CS2Ranking.Domain.Factories;
 using CS2Ranking.Domain.Entities;
 
 namespace CS2Ranking.Infrastructure.Data.Seeders
