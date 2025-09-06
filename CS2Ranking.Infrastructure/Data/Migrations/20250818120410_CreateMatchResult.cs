@@ -28,7 +28,7 @@ namespace CS2Ranking.Infrastructure.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MatchResult", x => x.id);
-                    table.ForeignKey( name: "FK_MatchResult_Match", column: x => x.match_id, principalTable: "Match", principalColumn: "id", onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey( name: "FK_MatchResult_Match", column: x => x.match_id, principalTable: "Match", principalColumn: "id", onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 

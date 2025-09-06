@@ -9,6 +9,7 @@ namespace CS2Ranking.Application
         {
             services.AddScoped<IMatchService, MatchService>();
             services.AddScoped<IMapService, MapService>();
+            services.AddScoped<IRankService, RankService>();
             return services;
         }
     }

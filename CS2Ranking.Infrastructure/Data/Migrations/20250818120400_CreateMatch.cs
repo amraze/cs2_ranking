@@ -25,7 +25,7 @@ namespace CS2Ranking.Infrastructure.Data.Migrations
                 {
                     table.PrimaryKey("PK_Match", x => x.id);
                     table.ForeignKey( name: "FK_Match_Map", column: x => x.map_id, principalTable: "Map", principalColumn: "id", onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey( name: "FK_Match_Season", column: x => x.season_id, principalTable: "Season", principalColumn: "id", onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey( name: "FK_Match_Season", column: x => x.season_id, principalTable: "Season", principalColumn: "id", onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
