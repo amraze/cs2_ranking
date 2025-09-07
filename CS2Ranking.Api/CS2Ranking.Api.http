@@ -1,0 +1,6 @@
+@CS2Ranking.Api_HostAddress = http://localhost:5285
+
+GET {{CS2Ranking.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

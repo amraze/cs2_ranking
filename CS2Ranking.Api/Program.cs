@@ -10,7 +10,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
             builder.Configuration.GetConnectionString("DefaultConnection"),
             new MySqlServerVersion(new Version(8, 0, 33))
         )
-        .UseSnakeCaseNamingConvention() 
+        .UseSnakeCaseNamingConvention()
 );
 
 builder.Services.AddCors(options =>

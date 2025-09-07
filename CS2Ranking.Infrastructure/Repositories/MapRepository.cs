@@ -1,5 +1,5 @@
 ﻿using CS2Ranking.Domain.Entities;
-using CS2Ranking.Domain.Interfaces;
+using CS2Ranking.Application.Interfaces.IRepositories;
 
 namespace CS2Ranking.Infrastructure.Repositories
 {

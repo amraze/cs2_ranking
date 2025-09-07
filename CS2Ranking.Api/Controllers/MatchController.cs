@@ -1,5 +1,5 @@
 using CS2Ranking.Application.Dtos;
-using CS2Ranking.Application.Interfaces;
+using CS2Ranking.Application.Interfaces.IServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CS2Ranking.Application.Controllers

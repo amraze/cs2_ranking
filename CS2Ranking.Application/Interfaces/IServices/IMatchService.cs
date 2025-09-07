@@ -1,4 +1,4 @@
-﻿namespace CS2Ranking.Application.Interfaces
+﻿namespace CS2Ranking.Application.Interfaces.IServices
 {
     public interface IMatchService
     {

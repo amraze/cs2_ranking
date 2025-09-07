@@ -1,5 +1,5 @@
-using Bogus;
 using CS2Ranking.Domain.Entities;
+using Bogus;
 
 namespace CS2Ranking.Domain.Factories
 {

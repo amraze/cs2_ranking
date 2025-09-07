@@ -1,13 +1,12 @@
-﻿using CS2Ranking.Domain.Interfaces;
-using CS2Ranking.Infrastructure.Models;
+﻿using CS2Ranking.Application.Interfaces.IRepositories;
+using CS2Ranking.Infrastructure.ExternalModels;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http.Json;
-using System.Text.Json;
 
 /// <summary>
 /// External service responsible for fetching data from Google Sheets.
 /// </summary>
-namespace CS2Ranking.Infrastructure.Services
+namespace CS2Ranking.Infrastructure.ExternalServices
 {
     public class GoogleSheetsService : IGoogleSheetsService
     {

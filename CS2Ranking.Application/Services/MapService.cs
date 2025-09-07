@@ -1,6 +1,6 @@
 ﻿using CS2Ranking.Application.Dtos;
-using CS2Ranking.Application.Interfaces;
-using CS2Ranking.Domain.Interfaces;
+using CS2Ranking.Application.Interfaces.IRepositories;
+using CS2Ranking.Application.Interfaces.IServices;
 
 namespace CS2Ranking.Application.Services
 {

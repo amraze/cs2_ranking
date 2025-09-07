@@ -1,4 +1,4 @@
-﻿using CS2Ranking.Domain.Interfaces;
+﻿using CS2Ranking.Application.Interfaces.IRepositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace CS2Ranking.Infrastructure.Repositories

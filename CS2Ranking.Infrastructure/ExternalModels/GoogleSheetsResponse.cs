@@ -1,4 +1,4 @@
-﻿namespace CS2Ranking.Infrastructure.Models
+﻿namespace CS2Ranking.Infrastructure.ExternalModels
 {
     public class GoogleSheetsResponse
     {

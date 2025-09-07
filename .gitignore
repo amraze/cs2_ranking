@@ -1,4 +1,4 @@
 .vs
 bin
 obj
-CS2Ranking.Application/appsettings.json
+CS2Ranking.Api/appsettings.json

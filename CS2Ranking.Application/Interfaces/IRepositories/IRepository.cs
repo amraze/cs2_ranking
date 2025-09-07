@@ -1,4 +1,4 @@
-﻿namespace CS2Ranking.Domain.Interfaces
+﻿namespace CS2Ranking.Application.Interfaces.IRepositories
 {
     public interface IRepository<T> where T : class
     {

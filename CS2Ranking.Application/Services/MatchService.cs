@@ -1,7 +1,6 @@
-﻿using CS2Ranking.Application.Interfaces;
+﻿using CS2Ranking.Application.Interfaces.IServices;
 using CS2Ranking.Domain.Factories;
-using CS2Ranking.Domain.Interfaces;
-using System.Text.Json;
+using CS2Ranking.Application.Interfaces.IRepositories;
 
 namespace CS2Ranking.Application.Services
 {
@@ -15,11 +14,11 @@ namespace CS2Ranking.Application.Services
         public async Task ImportFromSheetAsync(string sheetLink)
         {
             var maps = (await _mapService.GetAllMapsAsync()).ToDictionary(m => m.Name, m => m.Id);
-            var ranks = (await _rankService.GetAllRanksAsync());
+            var ranks = (await _rankService.GetAllRanksAsync()).ToDictionary(r => r.RatingMin, r => r.Id);
 
             var rows = await _googleSheetsService.GetSheetDataAsync(sheetLink);
             var matches = rows.Skip(1).Select(row => MatchFactory.CreateFromSheets(row, maps)).ToList();
-
+             
             if (matches.Count == 0) return;
             await _matchRepository.DeleteAllAsync();
             await _matchRepository.AddRangeAsync(matches);

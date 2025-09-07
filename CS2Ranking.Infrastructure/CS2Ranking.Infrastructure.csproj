@@ -7,6 +7,7 @@
   </PropertyGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\CS2Ranking.Application\CS2Ranking.Application.csproj" />
 		<ProjectReference Include="..\CS2Ranking.Domain\CS2Ranking.Domain.csproj" />
 	</ItemGroup>
 

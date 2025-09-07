@@ -1,4 +1,5 @@
 
+using CS2Ranking.Domain.Entities;
 using System.Globalization;
 
 namespace CS2Ranking.Domain.Factories
@@ -35,7 +36,6 @@ namespace CS2Ranking.Domain.Factories
 
             if (int.TryParse(row[12], out var rankScore))
             {
-                Console.WriteLine(rankScore);
                 match.SetRank(rankScore, 1);
             }
 

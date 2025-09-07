@@ -1,6 +1,6 @@
-﻿using CS2Ranking.Domain.Interfaces;
+﻿using CS2Ranking.Application.Interfaces.IRepositories;
 using CS2Ranking.Infrastructure.Repositories;
-using CS2Ranking.Infrastructure.Services;
+using CS2Ranking.Infrastructure.ExternalServices;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CS2Ranking.Infrastructure
