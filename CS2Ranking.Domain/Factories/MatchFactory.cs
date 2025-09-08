@@ -1,6 +1,7 @@
 
 using CS2Ranking.Domain.Entities;
 using System.Globalization;
+using System.Text.Json;
 
 namespace CS2Ranking.Domain.Factories
 {
@@ -36,7 +37,10 @@ namespace CS2Ranking.Domain.Factories
 
             if (int.TryParse(row[12], out var rankScore))
             {
-                match.SetRank(rankScore, 1);
+                match.SetRank(
+                    rankId: 1,
+                    rankScore: rankScore
+                );
             }
 
             return match;

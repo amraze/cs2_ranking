@@ -27,7 +27,7 @@
         {
             MatchResult = new MatchResult(this, kills, assists, deaths, mvps, hsp, score, adr);
         }
-        public void SetRank(int rankScore, int rankId)
+        public void SetRank(int rankId, int rankScore)
         {
             MatchRank = new MatchRank(this, rankId, rankScore);
         }
