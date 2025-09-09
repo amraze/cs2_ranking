@@ -1,6 +1,7 @@
 ﻿using CS2Ranking.Application.Dtos;
-using CS2Ranking.Application.Interfaces.IServices;
 using CS2Ranking.Application.Interfaces.IRepositories;
+using CS2Ranking.Application.Interfaces.IServices;
+using CS2Ranking.Domain.Entities;
 
 namespace CS2Ranking.Application.Services
 {
@@ -21,6 +22,22 @@ namespace CS2Ranking.Application.Services
             });
 
             return rankDtos;
+        }
+
+        public async Task<RankResponseDto?> GetRankByScoreAsync(int score)
+        {
+            var ranks = await _rankRepository.FindAsync(r => r.RatingMax >= score && r.RatingMin <= score);
+            var rank = ranks.FirstOrDefault();
+            if (rank == null) return null;
+
+            return new RankResponseDto
+            {
+                Id = rank.Id,
+                Name = rank.Name,
+                RatingMin = rank.RatingMin,
+                RatingMax = rank.RatingMax,
+                PicturePath = rank.PicturePath
+            };
         }
     }
 }

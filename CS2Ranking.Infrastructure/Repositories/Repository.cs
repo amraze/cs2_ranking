@@ -1,5 +1,7 @@
 ﻿using CS2Ranking.Application.Interfaces.IRepositories;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace CS2Ranking.Infrastructure.Repositories
 {
@@ -53,6 +55,11 @@ namespace CS2Ranking.Infrastructure.Repositories
             var allEntities = await _dbSet.ToListAsync();
             _dbSet.RemoveRange(allEntities);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> exp)
+        {
+            return await _dbSet.Where(exp).ToListAsync();
         }
     }
 }

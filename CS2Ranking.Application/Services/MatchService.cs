@@ -1,6 +1,8 @@
-﻿using CS2Ranking.Application.Interfaces.IServices;
+﻿using CS2Ranking.Application.Interfaces.IRepositories;
+using CS2Ranking.Application.Interfaces.IServices;
+using CS2Ranking.Application.Mappers;
+using CS2Ranking.Domain.Entities;
 using CS2Ranking.Domain.Factories;
-using CS2Ranking.Application.Interfaces.IRepositories;
 
 namespace CS2Ranking.Application.Services
 {
@@ -13,12 +15,22 @@ namespace CS2Ranking.Application.Services
 
         public async Task ImportFromSheetAsync(string sheetLink)
         {
-            var maps = (await _mapService.GetAllMapsAsync()).ToDictionary(m => m.Name, m => m.Id);
-            var ranks = (await _rankService.GetAllRanksAsync()).ToDictionary(r => r.RatingMin, r => r.Id);
-
             var rows = await _googleSheetsService.GetSheetDataAsync(sheetLink);
-            var matches = rows.Skip(1).Select(row => MatchFactory.CreateFromSheets(row, maps)).ToList();
-             
+            var matches = new List<Match>();
+
+            foreach (var row in rows.Skip(1))
+            {
+                var parameters = MatchMapper.FromSheetRow(row);
+                var map = await _mapService.GetMapByNameAsync(parameters.MapName);
+                var rank = await _rankService.GetRankByScoreAsync(parameters.RankScore);
+               
+                if (map != null && rank != null)
+                {
+                    var match = MatchFactory.Create(parameters, map.Id, rank.Id);
+                    matches.Add(match);
+                }
+            }
+
             if (matches.Count == 0) return;
             await _matchRepository.DeleteAllAsync();
             await _matchRepository.AddRangeAsync(matches);

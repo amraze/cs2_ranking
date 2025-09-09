@@ -1,20 +1,18 @@
 
 using CS2Ranking.Domain.Entities;
-using System.Globalization;
-using System.Text.Json;
+using CS2Ranking.Domain.ParameterObjects;
 
 namespace CS2Ranking.Domain.Factories
 {
     public class MatchFactory
     {
-
-        public static Match CreateFromSheets(List<string> row, Dictionary<string, int> maps)
+        public static Match Create(MatchFactoryParameters matchParams, int mapId, int rankId)
         {
             var match = new Match(
-                seasonId: int.Parse(row[1]),
-                datetime: DateTime.Parse(row[2]),
-                mapId: maps[row[3]],
-                result: row[4].ToUpper() switch
+                seasonId: matchParams.SeasonId,
+                datetime: matchParams.DateTime,
+                mapId: mapId,
+                result: matchParams.Result.ToUpper() switch
                 {
                     "LOSS" => 0,
                     "DRAW" => 1,
@@ -23,27 +21,20 @@ namespace CS2Ranking.Domain.Factories
                 }
             );
 
-            double hsp = double.Parse(row[9], CultureInfo.InvariantCulture);
-
             match.SetResult(
-                kills: int.Parse(row[5]),
-                assists: int.Parse(row[6]),
-                deaths: int.Parse(row[7]),
-                mvps: int.Parse(row[8]),
-                hsp: hsp,
-                score: int.Parse(row[10]),
-                adr: int.Parse(row[11])
+                kills: matchParams.Kills,
+                assists: matchParams.Assists,
+                deaths: matchParams.Deaths,
+                mvps: matchParams.Mvps,
+                hsp: matchParams.Hsp,
+                score: matchParams.Score,
+                adr: matchParams.Adr
             );
 
-            if (int.TryParse(row[12], out var rankScore))
-            {
-                match.SetRank(
-                    rankId: 1,
-                    rankScore: rankScore
-                );
-            }
+            match.SetRank(rankId, matchParams.RankScore);
 
             return match;
         }
+
     }
 }
