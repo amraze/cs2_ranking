@@ -18,7 +18,7 @@ namespace CS2Ranking.Infrastructure.Data.Migrations
                     id = table.Column<int>(type: "int", nullable: false).Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     match_id = table.Column<int>(type: "int", nullable: false),
                     rank_id = table.Column<int>(type: "int", nullable: false),
-                    rank_score = table.Column<int>(type: "int", nullable: false),
+                    rank_score = table.Column<int>(type: "int", nullable: true),
                 },
                 constraints: table =>
                 {

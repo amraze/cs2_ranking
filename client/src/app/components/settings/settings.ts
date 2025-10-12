@@ -16,7 +16,7 @@ export class Settings {
   constructor(private matchService: MatchService) { }
 
   onSubmit(sheetId: string): void {
-    const sheetsLink = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:M`;
+    const sheetsLink = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/A:N`;
     this.matchService.importMatches(sheetsLink).subscribe({
       next: () => alert('Import successful'),
       error: err => alert('Import failed')

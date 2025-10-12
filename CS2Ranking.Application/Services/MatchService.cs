@@ -1,4 +1,5 @@
-﻿using CS2Ranking.Application.Interfaces.IRepositories;
+﻿using CS2Ranking.Application.Dtos;
+using CS2Ranking.Application.Interfaces.IRepositories;
 using CS2Ranking.Application.Interfaces.IServices;
 using CS2Ranking.Application.Mappers;
 using CS2Ranking.Domain.Entities;
@@ -22,8 +23,8 @@ namespace CS2Ranking.Application.Services
             {
                 var parameters = MatchMapper.FromSheetRow(row);
                 var map = await _mapService.GetMapByNameAsync(parameters.MapName);
-                var rank = await _rankService.GetRankByScoreAsync(parameters.RankScore);
-               
+                var rank = await _rankService.GetRankByScoreAsync(parameters.RankScore ?? default);
+
                 if (map != null && rank != null)
                 {
                     var match = MatchFactory.Create(parameters, map.Id, rank.Id);
@@ -34,6 +35,23 @@ namespace CS2Ranking.Application.Services
             if (matches.Count == 0) return;
             await _matchRepository.DeleteAllAsync();
             await _matchRepository.AddRangeAsync(matches);
+        }
+
+        public async Task<IEnumerable<IGrouping<DateTime, MatchResponseDto>>> GetMatches(int? limit, int? offset)
+        {
+            var matches = await _matchRepository.GetWithDetailsAsync(limit, offset);
+
+            var matchDtos = matches.Select(m => new MatchResponseDto
+            {
+                Datetime = m.Datetime,
+                Outcome = m.Outcome,
+                MatchResult = m.MatchResult,
+                MatchRank = m.MatchRank
+            });
+
+            var grouped = matchDtos.GroupBy(m => m.Datetime);
+
+            return grouped;
         }
     }
 }

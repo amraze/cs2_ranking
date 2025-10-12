@@ -18,6 +18,25 @@
     border-radius: 0;
 }
 
+.w-50px {
+    width: 50px;
+}
+
+.w-100px {
+    width: 100px;
+}
+
+.w-150px {
+    width: 150px;
+}
+
+.hltv-score {
+    top: 20px;
+    right: 0;
+    font-size: 12px;
+    color: rgb(175, 175, 175);
+}
+
 .first {
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
@@ -31,6 +50,10 @@
 .section-body:nth-child(even) {
     background: rgba(0, 0, 0, 0.9);
     color: white;
+}
+
+.section-body {
+    border-left: 5px solid red;
 }
 
 .section-body:nth-child(odd) {
@@ -58,4 +81,9 @@
 ::-webkit-scrollbar-thumb {
     background: white;
     border-radius: 15px;
+}
+
+.progress {
+    height: 4px;
+    background: rgb(41, 41, 41);
 }

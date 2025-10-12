@@ -1,7 +1,12 @@
+import { MatchRank } from "./match-rank.interface";
+import { MatchResult } from "./match-result.interface";
+
 export interface Match {
     id: number;
-    result: number;
+    outcome: number;
     mapId: number;
     seasonId: number;
-    dateTime: Date;
+    datetime: Date;
+    matchRank: MatchRank;
+    matchResult: MatchResult;
 }

@@ -22,7 +22,7 @@ namespace CS2Ranking.Infrastructure.Data.Migrations
                     deaths = table.Column<int>(type: "int", nullable: false),
                     mvps = table.Column<int>(type: "int", nullable: false),
                     hsp = table.Column<int>(type: "double", nullable: false),
-                    score = table.Column<int>(type: "int", nullable: false),
+                    hltv = table.Column<int>(type: "double", nullable: false),
                     adr = table.Column<int>(type: "int", nullable: false),
                 },
                 constraints: table =>

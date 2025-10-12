@@ -23,5 +23,19 @@ namespace CS2Ranking.Application.Controllers
                 return StatusCode(500, $"Error importing matches: {ex.Message}");
             }
         }
+
+        public async Task<IActionResult> GetMatches([FromQuery] int? limit, int? offset)
+        {
+            try
+            {
+                var matches = await _matchService.GetMatches(limit, offset);
+                return Ok(matches);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error getting matches: {ex.Message}");
+            }
+        }
+
     }
 }

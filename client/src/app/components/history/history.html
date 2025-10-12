@@ -1,30 +1,31 @@
 <div class="content">
     <h3 class="header mb-2 fw-bold">Match History</h3>
-    <div class="section-container">
-        <div class="section-content" *ngFor="let i of [0,1]">
+    <div class="section-container" (scroll)="onScroll($event)">
+        <div class="section-content" *ngFor="let matchDates of matches; index as i">
             <div class="section-header p-3 d-flex justify-content-between" [ngClass]="{ 'first': i === 0 }">
                 <div class="global-data ms-3">
                     <div class="date d-flex align-items-center">
-                        <span class="fw-bold fs-6">Aug 12</span>
-                        <span class="badge rounded-pill text-bg-secondary ms-2">5</span>
+                        <span class="fw-bold fs-6">{{matchDates[0].datetime | date:'dd MMM'}}</span>
+                        <span class="badge rounded-pill text-bg-secondary ms-2">{{matchDates.length}}</span>
                     </div>
-                    <div class="score fs-5 fw-bold">2 <span class="text-success">W</span> • 3 <span
-                            class="text-danger">L</span>
+                    <div class="score fs-5 fw-bold">
+                        <span>{{matchDates | countResult:2}}<span class="text-success"> W</span></span>
+                        <span> • {{matchDates | countResult:1}}<span class="text-warning"> D</span></span>
+                        <span> • {{matchDates | countResult:0}}<span class="text-danger"> L</span></span>
                     </div>
                 </div>
                 <div class="global-stats d-flex">
-                    <div class="kd_stat text-center me-5">
+                    <div class="kd_stat text-center me-4 pe-2 w-50px">
                         <div class="text-secondary fw-bold">K/D</div>
-                        <div class="fs-5 fw-bold">1.15</div>
+                        <div class="fs-5 fw-bold">{{ matchDates | averageKd | number:'1.1-1' }}</div>
                     </div>
-                    <div class="kd_stat text-center me-3">
+                    <div class="kd_stat text-center me-3 w-50px">
                         <div class="text-secondary fw-bold">ADR</div>
-                        <div class="fs-5 fw-bold">78</div>
+                        <div class="fs-5 fw-bold">{{ matchDates | averageAdr | number:'1.0-0' }}</div>
                     </div>
                 </div>
             </div>
-            <div class="section-body p-2 px-3" *ngFor="let j of [0,1,2,3,4]"
-                [ngClass]="{ 'last pb-3': i === 1 && j == 4}">
+            <div class="section-body p-2 px-3" *ngFor="let match of matchDates; index as j">
                 <div class="global-data ms-3 d-flex align-items-center justify-content-between">
                     <div class="map">
                         <img src="https://imgsvc.trackercdn.com/url/max-width(72),quality(70)/https%3A%2F%2Ftrackercdn.com%2Fcdn%2Ftracker.gg%2Fcs2%2Fmaps%2Ficons%2Fde_inferno.png/image.png"
@@ -32,39 +33,54 @@
                         <span class="ms-3 fw-bold fs-5">Inferno</span>
                         <div class="badge rounded-pill bg-danger-subtle text-danger-emphasis ms-3 fs-6"
                             style="border: 1px solid var(--bs-danger-text-emphasis);">
-                            13 : 11
+                            {{match.outcome}}
                         </div>
                     </div>
-                    <div class="global-stats d-flex align-items-center">
-                        <div class="badge text-center text-white">
-                            +300
+                    <div class="global-stats d-flex align-items-center justify-content-between" style="width:755px">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="badge text-center text-white">
+                                {{ matches | rankDifference:j:i }}
+                            </div>
+                            <div class="rank text-center fs-5 fw-bold">
+                                <i>{{ match.matchRank.rankScore | number }}</i>
+                            </div>
                         </div>
-                        <div class="rank text-center me-5 fs-5 ps-2 fw-bold">
-                            <i>{{ 2650 | number }}</i>
-                        </div>
-                        <div class="kd_stat text-center me-5">
+                        <div class="kad_stat text-end w-100px">
                             <div class="text-secondary fw-bold">K / A / D</div>
-                            <div class="fs-5 fw-bold">27 / 3 / 13</div>
+                            <div class="fs-5 fw-bold text-end">{{ match.matchResult.kills }} /
+                                {{ match.matchResult.assists }} /
+                                {{ match.matchResult.deaths }}</div>
                         </div>
-                        <div class="kd_stat text-center me-5">
+                        <div
+                            class="hsp_stat text-center w-150px d-flex align-items-between flex-column position-relative">
+                            <div class="text-secondary fw-bold">HLTV</div>
+                            <div style="height:30px" class="d-flex align-items-center ">
+                                <div class="progress mt-2 w-100">
+                                    <div class="progress-bar" [style.width.%]="(match.matchResult.hltv / 1.8) * 100">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="hltv-score position-absolute">
+                                {{ match.matchResult.hltv }}
+                            </div>
+                        </div>
+                        <div class="mvp_stat text-center w-50px">
                             <div class="text-secondary fw-bold">MVPs</div>
-                            <div class="fs-5 fw-bold">1.3</div>
+                            <div class="fs-5 fw-bold">{{ match.matchResult.mvps }}</div>
                         </div>
-                        <div class="kd_stat text-center me-5">
+                        <div class="hsp_stat text-center w-50px">
                             <div class="text-secondary fw-bold">HSP</div>
-                            <div class="fs-5 fw-bold">33.5%</div>
+                            <div class="fs-5 fw-bold">{{ match.matchResult.hsp * 100 | number:'1.0' }}%</div>
                         </div>
-                        <div class="kd_stat text-center me-5">
-                            <div class="text-secondary fw-bold">SCORE</div>
-                            <div class="fs-5 fw-bold">23.8</div>
-                        </div>
-                        <div class="kd_stat text-center me-5">
+                        <div class="kd_stat text-center w-50px">
                             <div class="text-secondary fw-bold">K/D</div>
-                            <div class="fs-5 fw-bold">1.15</div>
+                            <div class="fs-5 fw-bold">
+                                {{ match.matchResult.kills / match.matchResult.deaths | number:'1.1-1' }}
+                            </div>
                         </div>
-                        <div class="kd_stat text-center me-3">
+                        <div class="adr_stat text-center w-50px me-3">
                             <div class="text-secondary fw-bold">ADR</div>
-                            <div class="fs-5 fw-bold">78</div>
+                            <div class="fs-5 fw-bold">{{match.matchResult.adr}}</div>
                         </div>
                     </div>
                 </div>

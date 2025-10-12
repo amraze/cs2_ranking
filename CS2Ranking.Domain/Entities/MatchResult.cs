@@ -9,22 +9,20 @@
         public int Deaths { get; set; }
         public int Mvps { get; set; }
         public double Hsp { get; set; }
-        public int Score { get; set; }
+        public double Hltv { get; set; }
         public int Adr { get; set; }
-        public Match Match { get; private set; }
         // Required by EF Core for materialization
         private MatchResult() { }
 
         // Domain constructor 
-        internal MatchResult(Match match, int kills, int assists, int deaths, int mvps, double hsp, int score, int adr)
+        internal MatchResult(Match match, int kills, int assists, int deaths, int mvps, double hsp, double hltv, int adr)
         {
-            Match = match ?? throw new ArgumentNullException(nameof(match));
             Kills = kills;
             Assists = assists;
             Deaths = deaths;
             Mvps = mvps;
             Hsp = hsp;
-            Score = score;
+            Hltv = hltv;
             Adr = adr;
         }
     }

@@ -7,21 +7,22 @@
     {
         public static MatchFactoryParameters FromSheetRow(List<string> row)
         {
-            double hsp = double.Parse(row[9], CultureInfo.InvariantCulture);
-            int rankScore = int.TryParse(row[12], out var score) ? score : 0;
+            double hsp = double.Parse(row[10], CultureInfo.InvariantCulture);
+            double? hltv = double.TryParse(row[11], NumberStyles.Any, CultureInfo.InvariantCulture, out var hltv3)? hltv3: null;
+            int? rankScore = int.TryParse(row[13], out var rank) ? rank : null;
 
             return new MatchFactoryParameters(
                 seasonId: int.Parse(row[1]),
                 dateTime: DateTime.Parse(row[2]),
                 mapName: row[3],
-                result: row[4],
-                kills: int.Parse(row[5]),
-                assists: int.Parse(row[6]),
-                deaths: int.Parse(row[7]),
-                mvps: int.Parse(row[8]),
+                outcome: row[4],
+                kills: int.Parse(row[6]),
+                assists: int.Parse(row[7]),
+                deaths: int.Parse(row[8]),
+                mvps: int.Parse(row[9]),
                 hsp: hsp,
-                score: int.Parse(row[10]),
-                adr: int.Parse(row[11]),
+                hltv: hltv3,
+                adr: int.Parse(row[12]),
                 rankScore: rankScore
             );
         }

@@ -12,7 +12,7 @@ namespace CS2Ranking.Domain.Factories
                 seasonId: matchParams.SeasonId,
                 datetime: matchParams.DateTime,
                 mapId: mapId,
-                result: matchParams.Result.ToUpper() switch
+                outcome: matchParams.Outcome.ToUpper() switch
                 {
                     "LOSS" => 0,
                     "DRAW" => 1,
@@ -27,7 +27,7 @@ namespace CS2Ranking.Domain.Factories
                 deaths: matchParams.Deaths,
                 mvps: matchParams.Mvps,
                 hsp: matchParams.Hsp,
-                score: matchParams.Score,
+                hltv: matchParams.Hltv,
                 adr: matchParams.Adr
             );
 

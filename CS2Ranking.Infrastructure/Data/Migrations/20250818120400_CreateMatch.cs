@@ -16,7 +16,7 @@ namespace CS2Ranking.Infrastructure.Data.Migrations
                 columns: table => new
                 {
                     id = table.Column<int>(type: "int", nullable: false).Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    result = table.Column<int>(type: "int", nullable: false),
+                    outcome = table.Column<int>(type: "int", nullable: false),
                     map_id = table.Column<int>(type: "int", nullable: false),
                     season_id = table.Column<int>(type: "int", nullable: false),
                     datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false)
