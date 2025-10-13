@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { SharedImports } from '../../shared/shared-imports';
 import { MatchService } from '../../services/match.service';
 import { Match } from '../../shared/models/match.interface';
+import { MapService } from '../../services/map.service';
+import { Map } from '../../shared/models/map.interface';
 
 @Component({
   selector: 'app-history',
@@ -13,12 +15,25 @@ export class History implements OnInit {
   private offset = 0;
   private limit = 20;
   protected matches: Match[][] = [];
+  protected maps: { [id: string]: Map } = {};
   protected hasMoreMatches: boolean = true;
 
-  constructor(private matchService: MatchService) { }
+  constructor(private matchService: MatchService, private mapService: MapService) { }
 
   ngOnInit(): void {
-    this.getMatches()
+    this.getMaps();
+    this.getMatches();
+  }
+
+  getMaps(): void {
+    this.mapService.getMaps().subscribe(response => {
+      const maps = response;
+      this.maps = maps.reduce((acc, map) => {
+        acc[map.id] = map;
+        return acc;
+      }, {} as { [id: string]: Map });
+
+    })
   }
 
   getMatches(): void {
@@ -32,13 +47,8 @@ export class History implements OnInit {
     })
   }
 
-  onScroll(event: Event) {
-    const element = event.target as HTMLElement;
-
-    const atBottom =
-      element.scrollHeight - element.scrollTop <= element.clientHeight + 1;
-
-    if (atBottom && this.hasMoreMatches) {
+  loadNextMatches() {
+    if (this.hasMoreMatches) {
       this.offset += 20;
       this.getMatches();
     }

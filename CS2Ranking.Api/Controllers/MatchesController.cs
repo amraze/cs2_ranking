@@ -2,7 +2,7 @@ using CS2Ranking.Application.Dtos;
 using CS2Ranking.Application.Interfaces.IServices;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CS2Ranking.Application.Controllers
+namespace CS2Ranking.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -28,7 +28,7 @@ namespace CS2Ranking.Application.Controllers
         {
             try
             {
-                var matches = await _matchService.GetMatches(limit, offset);
+                var matches = await _matchService.GetGroupedMatchesAsync(limit, offset);
                 return Ok(matches);
             }
             catch (Exception ex)

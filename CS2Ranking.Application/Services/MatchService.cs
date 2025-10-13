@@ -37,7 +37,7 @@ namespace CS2Ranking.Application.Services
             await _matchRepository.AddRangeAsync(matches);
         }
 
-        public async Task<IEnumerable<IGrouping<DateTime, MatchResponseDto>>> GetMatches(int? limit, int? offset)
+        public async Task<IEnumerable<IGrouping<DateTime, MatchResponseDto>>> GetGroupedMatchesAsync(int? limit, int? offset)
         {
             var matches = await _matchRepository.GetWithDetailsAsync(limit, offset);
 
@@ -45,6 +45,7 @@ namespace CS2Ranking.Application.Services
             {
                 Datetime = m.Datetime,
                 Outcome = m.Outcome,
+                MapId = m.MapId,
                 MatchResult = m.MatchResult,
                 MatchRank = m.MatchRank
             });
