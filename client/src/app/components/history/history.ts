@@ -6,7 +6,7 @@ import { MapService } from '../../services/map.service';
 import { RankService } from '../../services/rank.service';
 import { Map } from '../../shared/models/map.interface';
 import { Rank } from '../../shared/models/rank.interface';
-import { EntityCustomizer } from '../../shared/services/entity-customizer';
+import { EntityCustomizer } from '../../shared/utils/entity-customizer';
 
 @Component({
   selector: 'app-history',
