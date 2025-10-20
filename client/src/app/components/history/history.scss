@@ -53,7 +53,7 @@
 }
 
 .section-body {
-    border-left: 5px solid red;
+    border-left: 5px solid black;
 }
 
 .section-body:nth-child(odd) {
@@ -86,4 +86,24 @@
 .progress {
     height: 4px;
     background: rgb(41, 41, 41);
+}
+
+.hltv-poor {
+    background: rgb(var(--bs-danger-rgb));
+}
+
+.hltv-average {
+    background: rgb(var(--bs-warning-rgb));
+}
+
+.hltv-good {
+    background: #90be6d;
+}
+
+.hltv-great {
+    background: rgb(var(--bs-success-rgb));
+}
+
+.hltv-excellent {
+    background: #6f42c1;
 }

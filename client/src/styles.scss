@@ -41,3 +41,9 @@ html {
     background: white;
     border-radius: 15px;
 }
+
+:root {
+    --bs-success-rgb: 100, 185, 150 !important;
+    --bs-danger-rgb: 255, 120, 120 !important;
+    --bs-warning-rgb: 255, 200, 120 !important;
+}

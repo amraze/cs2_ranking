@@ -9,5 +9,5 @@ export const SharedImports = [
     CountResultPipe,
     AverageKdPipe,
     AverageAdrPipe,
-    RankDifferencePipe
+    RankDifferencePipe,
 ];

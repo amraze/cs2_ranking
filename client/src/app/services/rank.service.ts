@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Map } from '../shared/models/map.interface';
+import { Rank } from '../shared/models/rank.interface';
 
 @Injectable({
   providedIn: 'root'
 })
-export class MapService {
-  private url = 'http://localhost:5130/api/maps';
+export class RankService {
+  private url = 'http://localhost:5130/api/ranks';
   constructor(private http: HttpClient) { }
 
-  getMaps(): Observable<Map[]> {
-    return this.http.get<Map[]>(this.url);
+  getRanks(): Observable<Rank[]> {
+    return this.http.get<Rank[]>(this.url);
   }
 }

@@ -3,7 +3,10 @@ import { SharedImports } from '../../shared/shared-imports';
 import { MatchService } from '../../services/match.service';
 import { Match } from '../../shared/models/match.interface';
 import { MapService } from '../../services/map.service';
+import { RankService } from '../../services/rank.service';
 import { Map } from '../../shared/models/map.interface';
+import { Rank } from '../../shared/models/rank.interface';
+import { EntityCustomizer } from '../../shared/services/entity-customizer';
 
 @Component({
   selector: 'app-history',
@@ -15,14 +18,28 @@ export class History implements OnInit {
   private offset = 0;
   private limit = 20;
   protected matches: Match[][] = [];
+  protected ranks: { [id: string]: Rank } = {};
   protected maps: { [id: string]: Map } = {};
   protected hasMoreMatches: boolean = true;
+  EntityCustomizer = EntityCustomizer;
 
-  constructor(private matchService: MatchService, private mapService: MapService) { }
+  constructor(private matchService: MatchService, private mapService: MapService, private rankService: RankService) { }
 
   ngOnInit(): void {
+    this.getRanks();
     this.getMaps();
     this.getMatches();
+  }
+
+  getRanks(): void {
+    this.rankService.getRanks().subscribe(response => {
+      const ranks = response;
+      this.ranks = ranks.reduce((acc, rank) => {
+        acc[rank.id] = rank;
+        return acc;
+      }, {} as { [id: string]: Rank });
+
+    })
   }
 
   getMaps(): void {
