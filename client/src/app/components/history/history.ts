@@ -16,7 +16,7 @@ import { EntityCustomizer } from '../../shared/utils/entity-customizer';
 })
 export class History implements OnInit {
   private offset = 0;
-  private limit = 20;
+  private limit = 15;
   protected matches: Match[][] = [];
   protected ranks: { [id: string]: Rank } = {};
   protected maps: { [id: string]: Map } = {};
@@ -66,7 +66,7 @@ export class History implements OnInit {
 
   loadNextMatches() {
     if (this.hasMoreMatches) {
-      this.offset += 20;
+      this.offset += 15;
       this.getMatches();
     }
   }
