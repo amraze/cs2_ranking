@@ -17,7 +17,8 @@ namespace CS2Ranking.Application.Services
             {
                 Id = map.Id,
                 Name = map.Name,
-                PicturePath = map.PicturePath
+                PicturePath = map.PicturePath,
+                LogoPath = map.LogoPath
             });
 
             return mapDtos;
@@ -33,7 +34,8 @@ namespace CS2Ranking.Application.Services
             {
                 Id = map.Id,
                 Name = map.Name,
-                PicturePath = map.PicturePath
+                PicturePath = map.PicturePath,
+                LogoPath = map.LogoPath
             };
         }
     }

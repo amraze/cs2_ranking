@@ -42,8 +42,7 @@
                 [ngClass]="EntityCustomizer.getClasses('matchOutcomeBorder', match.outcome.toString())">
                 <div class="global-data ms-3 d-flex align-items-center justify-content-between">
                     <div class="map d-flex">
-                        <img [src]="maps[match.mapId].picturePath" [alt]="maps[match.mapId].name" width="50"
-                            class="me-3">
+                        <img [src]="maps[match.mapId].logoPath" [alt]="maps[match.mapId].name" width="50" class="me-3">
                         <div class="d-flex align-items-center justify-content-between w-150px">
                             <span class="fw-bold fs-5">{{maps[match.mapId].name}}</span>
                             <div class="badge rounded-pill fs-6"
@@ -52,7 +51,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="global-stats d-flex align-items-center justify-content-between" style="width:755px">
+                    <div class="global-stats d-flex align-items-center justify-content-between" style="width:600px">
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="badge text-center bg-transparent"
                                 [ngClass]="EntityCustomizer.getClasses('matchOutcome', match.outcome.toString())">
@@ -83,14 +82,6 @@
                             <div class="hltv-score position-absolute">
                                 {{ match.matchResult.hltv }}
                             </div>
-                        </div>
-                        <div class="mvp_stat text-center w-50px">
-                            <div class="text-secondary fw-bold">MVPs</div>
-                            <div class="fs-5 fw-bold">{{ match.matchResult.mvps }}</div>
-                        </div>
-                        <div class="hsp_stat text-center w-50px">
-                            <div class="text-secondary fw-bold">HSP</div>
-                            <div class="fs-5 fw-bold">{{ match.matchResult.hsp * 100 | number:'1.0' }}%</div>
                         </div>
                         <div class="kd_stat text-center w-50px">
                             <div class="text-secondary fw-bold">K/D</div>

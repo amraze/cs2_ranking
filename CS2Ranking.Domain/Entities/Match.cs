@@ -23,9 +23,9 @@
         }
 
         // Aggregate root creates its dependent entities
-        public void SetResult(int kills, int assists, int deaths, int mvps, double hsp, double hltv, int adr)
+        public void SetResult(int kills, int assists, int deaths, double hltv, int adr)
         {
-            MatchResult = new MatchResult(this, kills, assists, deaths, mvps, hsp, hltv, adr);
+            MatchResult = new MatchResult(this, kills, assists, deaths, hltv, adr);
         }
         public void SetRank(int rankId, int? rankScore)
         {
