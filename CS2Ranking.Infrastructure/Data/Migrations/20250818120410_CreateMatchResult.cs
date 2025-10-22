@@ -20,8 +20,6 @@ namespace CS2Ranking.Infrastructure.Data.Migrations
                     kills = table.Column<int>(type: "int", nullable: false),
                     assists = table.Column<int>(type: "int", nullable: false),
                     deaths = table.Column<int>(type: "int", nullable: false),
-                    mvps = table.Column<int>(type: "int", nullable: false),
-                    hsp = table.Column<int>(type: "double", nullable: false),
                     hltv = table.Column<int>(type: "double", nullable: false),
                     adr = table.Column<int>(type: "int", nullable: false),
                 },
