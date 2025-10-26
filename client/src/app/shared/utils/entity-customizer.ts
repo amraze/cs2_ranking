@@ -38,6 +38,11 @@ export class EntityCustomizer {
                 { range: [0, 0.99], classes: ['text-danger'], text: 'Poor performance' },
                 { range: [1, Infinity], classes: ['text-success'], text: 'Good performance' },
             ],
+
+            ranks: {
+                1: { classes: ['common'] },
+                2: { classes: ['uncommon'] },
+            },
         };
 
     private static getEntityRule(entity: string, state: any): CustomizationRule | undefined {

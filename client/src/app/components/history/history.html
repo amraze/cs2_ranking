@@ -57,7 +57,9 @@
                                 [ngClass]="EntityCustomizer.getClasses('matchOutcome', match.outcome.toString())">
                                 {{ matches | rankDifference:j:i }}
                             </div>
-                            <div class="rank text-center fs-5 fw-bold">
+                            <div class="rank text-center fs-5 fw-bold"
+                                [ngStyle]="{'background-image': 'url(' + ranks[match.matchRank.rankId].picturePath + ')'}"
+                                [ngClass]="EntityCustomizer.getClasses('ranks', match.matchRank.rankId)">
                                 <i>{{ match.matchRank.rankScore != null ? (match.matchRank.rankScore | number) : 'N/A'
                                     }}</i>
                             </div>

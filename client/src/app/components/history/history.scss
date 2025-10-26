@@ -65,13 +65,34 @@
     color: white;
 }
 
+.common {
+    color: #B1C3D9;
+}
+
+.uncommon {
+    color: #5E97D6;
+}
+
+.rare {
+    color: #4B69FF;
+}
+
+.mythical {
+    color: #8846FF;
+}
+
+.legendary {
+    color: #D22CE6
+}
+
+.ancient {
+    color: #EB4B4B;
+}
+
 .rank {
-    background-image: url('https://static.csstats.gg/images/ranks/cs2/rating.uncommon.png');
     width: 89px;
     height: 32px;
     background-size: cover;
-    color: #5E97D6;
-    font-size: 24px;
 }
 
 ::-webkit-scrollbar {
