@@ -11,6 +11,7 @@ public class MatchRepository(AppDbContext context) : Repository<Match>(context),
         IQueryable<Match> query = _dbSet
             .Include(m => m.MatchRank)
             .Include(m => m.MatchResult)
+            .Where(m => m.Gamemode == "premier")
             .OrderByDescending(m => m.Id);
         
         if (limit.HasValue && offset.HasValue)

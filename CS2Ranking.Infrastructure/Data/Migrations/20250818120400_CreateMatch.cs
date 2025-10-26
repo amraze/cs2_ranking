@@ -17,6 +17,8 @@ namespace CS2Ranking.Infrastructure.Data.Migrations
                 {
                     id = table.Column<int>(type: "int", nullable: false).Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     outcome = table.Column<int>(type: "int", nullable: false),
+                    score = table.Column<int>(type: "varchar(255)", nullable: false),
+                    gamemode = table.Column<int>(type: "varchar(255)", nullable: false),
                     map_id = table.Column<int>(type: "int", nullable: false),
                     season_id = table.Column<int>(type: "int", nullable: false),
                     datetime = table.Column<DateTime>(type: "datetime(6)", nullable: false)

@@ -7,6 +7,8 @@
         public DateTime Datetime { get; private set; }
         public int MapId { get; private set; }
         public int Outcome { get; private set; }
+        public string Gamemode { get; private set; }
+        public string Score { get; private set; }
         public MatchResult? MatchResult { get; private set; }
         public MatchRank? MatchRank { get; private set; }
 
@@ -14,12 +16,14 @@
         private Match() { }
 
         // Domain constructor 
-        public Match(int seasonId, DateTime datetime, int mapId, int outcome)
+        public Match(int seasonId, DateTime datetime, int mapId, int outcome, string score, string gamemode)
         {
             SeasonId = seasonId;
             Datetime = datetime;
             MapId = mapId;
             Outcome = outcome;
+            Score = score;
+            Gamemode = gamemode;
         }
 
         // Aggregate root creates its dependent entities

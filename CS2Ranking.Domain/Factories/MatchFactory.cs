@@ -12,21 +12,15 @@ namespace CS2Ranking.Domain.Factories
                 seasonId: matchParams.SeasonId,
                 datetime: matchParams.DateTime,
                 mapId: mapId,
-                outcome: matchParams.Outcome.ToUpper() switch
-                {
-                    "LOSS" => 0,
-                    "DRAW" => 1,
-                    "WIN" => 2,
-                    _ => -1
-                }
+                outcome: matchParams.Outcome,
+                gamemode: matchParams.Gamemode,
+                score: matchParams.Score
             );
 
             match.SetResult(
                 kills: matchParams.Kills,
                 assists: matchParams.Assists,
                 deaths: matchParams.Deaths,
-                mvps: matchParams.Mvps,
-                hsp: matchParams.Hsp,
                 hltv: matchParams.Hltv,
                 adr: matchParams.Adr
             );

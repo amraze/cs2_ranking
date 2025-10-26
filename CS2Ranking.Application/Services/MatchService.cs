@@ -45,12 +45,14 @@ namespace CS2Ranking.Application.Services
             {
                 Datetime = m.Datetime,
                 Outcome = m.Outcome,
+                Gamemode = m.Gamemode,
+                Score = m.Score,
                 MapId = m.MapId,
                 MatchResult = m.MatchResult,
                 MatchRank = m.MatchRank
             });
 
-            var grouped = matchDtos.GroupBy(m => m.Datetime);
+            var grouped = matchDtos.GroupBy(m => m.Datetime.Date);
 
             return grouped;
         }

@@ -2,6 +2,7 @@
 using CS2Ranking.Infrastructure.Repositories;
 using CS2Ranking.Infrastructure.ExternalServices;
 using Microsoft.Extensions.DependencyInjection;
+using CS2Ranking.Infrastructure.Startup;
 
 namespace CS2Ranking.Infrastructure
 {
@@ -13,6 +14,8 @@ namespace CS2Ranking.Infrastructure
             services.AddScoped<IMapRepository, MapRepository>();
             services.AddScoped<IRankRepository, RankRepository>();
             services.AddHttpClient<IGoogleSheetsService, GoogleSheetsService>();
+            services.AddHttpClient<IScopeGGService, ScopeGGService>();
+            services.AddHostedService<ScopeGGStartupService>();
             return services;
         }
     }

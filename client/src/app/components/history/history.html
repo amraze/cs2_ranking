@@ -43,22 +43,23 @@
                 <div class="global-data ms-3 d-flex align-items-center justify-content-between">
                     <div class="map d-flex">
                         <img [src]="maps[match.mapId].logoPath" [alt]="maps[match.mapId].name" width="50" class="me-3">
-                        <div class="d-flex align-items-center justify-content-between w-150px">
+                        <div class="d-flex align-items-center justify-content-between w-180px">
                             <span class="fw-bold fs-5">{{maps[match.mapId].name}}</span>
                             <div class="badge rounded-pill fs-6"
                                 [ngClass]="EntityCustomizer.getClasses('matchOutcome', match.outcome.toString())">
-                                {{EntityCustomizer.getText('matchOutcome', match.outcome.toString())}}
+                                {{match.score}}
                             </div>
                         </div>
                     </div>
                     <div class="global-stats d-flex align-items-center justify-content-between" style="width:600px">
                         <div class="d-flex align-items-center justify-content-between">
-                            <div class="badge text-center bg-transparent"
+                            <div class="badge text-center bg-transparent" style="width:44px"
                                 [ngClass]="EntityCustomizer.getClasses('matchOutcome', match.outcome.toString())">
                                 {{ matches | rankDifference:j:i }}
                             </div>
                             <div class="rank text-center fs-5 fw-bold">
-                                <i>{{ match.matchRank.rankScore | number }}</i>
+                                <i>{{ match.matchRank.rankScore != null ? (match.matchRank.rankScore | number) : 'N/A'
+                                    }}</i>
                             </div>
                         </div>
                         <div class="kad_stat text-end w-100px">
@@ -80,7 +81,7 @@
                                 </div>
                             </div>
                             <div class="hltv-score position-absolute">
-                                {{ match.matchResult.hltv }}
+                                {{ match.matchResult.hltv | number:'1.2-2' }}
                             </div>
                         </div>
                         <div class="kd_stat text-center w-50px">
