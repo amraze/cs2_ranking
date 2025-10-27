@@ -89,6 +89,21 @@
     color: #EB4B4B;
 }
 
+.progress-bar {
+    width: 0%;
+    animation: fillAnimation 1.8s ease-in-out forwards;
+}
+
+@keyframes fillAnimation {
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: var(--target-width);
+    }
+}
+
 .rank {
     width: 89px;
     height: 32px;

@@ -18,31 +18,40 @@ namespace CS2Ranking.Infrastructure.ExternalServices
 
         public async Task<List<ScopeGGResponseDto>> GetScopeGGDataAsync()
         {
-            var matches = await _matchRepository.GetAllAsync();
-            var offset = matches.Count();
-            var limit = 15;
-
-            var sessionId = _config["ScopeGG:ScopeSessionId"];
-
-            var requestDto = new ScopeGGRequestDto
+            try
             {
-                Offset = offset,
-                Limit = limit,
-                Filter = new FilterDto(),
-                Sort = new SortDto()
-            };
+                var matches = await _matchRepository.GetAllAsync();
+                var offset = matches.Count();
+                var limit = 15;
 
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://app.scope.gg/api/matches/getMyMatches")
+                var sessionId = _config["ScopeGG:ScopeSessionId"];
+
+                var requestDto = new ScopeGGRequestDto
+                {
+                    Offset = offset,
+                    Limit = limit,
+                    Filter = new FilterDto(),
+                    Sort = new SortDto()
+                };
+
+                var request = new HttpRequestMessage(HttpMethod.Post, "https://app.scope.gg/api/matches/getMyMatches")
+                {
+                    Content = JsonContent.Create(requestDto)
+                };
+
+                request.Headers.Add("Cookie", $"scope_session_id={sessionId}");
+
+                var response = await _httpClient.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+
+                return await response.Content.ReadFromJsonAsync<List<ScopeGGResponseDto>>();
+            }
+
+            catch (HttpRequestException ex)
             {
-                Content = JsonContent.Create(requestDto)
-            };
-
-            request.Headers.Add("Cookie", $"scope_session_id={sessionId}");
-
-            var response = await _httpClient.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-
-            return await response.Content.ReadFromJsonAsync<List<ScopeGGResponseDto>>();
+                Console.WriteLine($"ScopeGG unreachable: {ex.Message}");
+                return new List<ScopeGGResponseDto>();
+            }
         }
     }
 }

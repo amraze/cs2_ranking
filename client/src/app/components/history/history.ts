@@ -38,7 +38,6 @@ export class History implements OnInit {
         acc[rank.id] = rank;
         return acc;
       }, {} as { [id: string]: Rank });
-      console.log(this.ranks);
     })
   }
 
@@ -70,5 +69,4 @@ export class History implements OnInit {
       this.getMatches();
     }
   }
-
 }
