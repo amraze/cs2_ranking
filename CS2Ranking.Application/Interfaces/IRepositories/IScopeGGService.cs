@@ -1,4 +1,4 @@
-﻿using CS2Ranking.Application.Dtos;
+﻿using CS2Ranking.Application.Dtos.ExternalDtos;
 
 namespace CS2Ranking.Application.Interfaces.IRepositories
 {

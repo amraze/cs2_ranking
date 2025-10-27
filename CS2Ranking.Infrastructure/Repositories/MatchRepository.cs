@@ -1,4 +1,5 @@
 ﻿using CS2Ranking.Application.Interfaces.IRepositories;
+using CS2Ranking.Application.Models;
 using CS2Ranking.Domain.Entities;
 using CS2Ranking.Infrastructure;
 using CS2Ranking.Infrastructure.Repositories;
@@ -21,4 +22,18 @@ public class MatchRepository(AppDbContext context) : Repository<Match>(context),
 
         return await query.ToListAsync();
     }
+
+    public async Task<IEnumerable<MapPerformance>> GetAllMapPerformanceAsync()
+    {
+        return await _dbSet
+            .GroupBy(m => m.MapId)
+            .Select(g => new MapPerformance
+            {
+                Id = g.Key,
+                Matches = g.Count(),
+                WinRate = g.Average(m => m.Outcome == 2 ? 1.0 : 0.0) * 100
+            })
+            .ToListAsync();
+    }
+
 }

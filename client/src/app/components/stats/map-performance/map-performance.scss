@@ -24,3 +24,9 @@
     border-top-right-radius: 0px;
     padding-bottom: 10px;
 }
+
+.map_performance {
+    max-height: 80vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}

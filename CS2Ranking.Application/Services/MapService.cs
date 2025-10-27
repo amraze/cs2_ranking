@@ -1,14 +1,13 @@
-﻿using CS2Ranking.Application.Dtos;
+﻿using CS2Ranking.Application.Dtos.MapDtos;
 using CS2Ranking.Application.Interfaces.IRepositories;
 using CS2Ranking.Application.Interfaces.IServices;
-using CS2Ranking.Domain.Entities;
-using System.Linq.Expressions;
 
 namespace CS2Ranking.Application.Services
 {
-    public class MapService(IMapRepository mapRepository) : IMapService
+    public class MapService(IMapRepository mapRepository, IMatchRepository matchRepository) : IMapService
     {
         private readonly IMapRepository _mapRepository = mapRepository;
+        private readonly IMatchRepository _matchRepository = matchRepository;
 
         public async Task<IEnumerable<MapResponseDto>> GetAllMapsAsync()
         {
@@ -22,6 +21,18 @@ namespace CS2Ranking.Application.Services
             });
 
             return mapDtos;
+        }
+
+        public async Task<IEnumerable<MapPerformanceResponseDto>> GetAllMapPerformanceAsync()
+        {
+            var performance = await _matchRepository.GetAllMapPerformanceAsync();
+
+            return performance.Select(p => new MapPerformanceResponseDto
+            {
+                Id = p.Id,
+                Matches = p.Matches,
+                WinRate = p.WinRate
+            }).ToList();
         }
 
         public async Task<MapResponseDto?> GetMapByNameAsync(string name)

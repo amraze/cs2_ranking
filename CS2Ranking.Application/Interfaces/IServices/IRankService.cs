@@ -1,4 +1,4 @@
-﻿using CS2Ranking.Application.Dtos;
+﻿using CS2Ranking.Application.Dtos.RankDtos;
 
 namespace CS2Ranking.Application.Interfaces.IServices
 {

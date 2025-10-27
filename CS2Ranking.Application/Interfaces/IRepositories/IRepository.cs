@@ -6,6 +6,7 @@ namespace CS2Ranking.Application.Interfaces.IRepositories
     {
         Task<T> GetByIdAsync(int id);
         Task<IEnumerable<T>> GetAllAsync();
+        Task<IEnumerable<int>> GetAllIdsAsync();
         Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> exp);
         Task<T> AddAsync(T entity);
         Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities);

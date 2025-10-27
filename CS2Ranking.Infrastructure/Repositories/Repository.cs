@@ -1,11 +1,12 @@
 ﻿using CS2Ranking.Application.Interfaces.IRepositories;
+using CS2Ranking.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Linq.Expressions;
 
 namespace CS2Ranking.Infrastructure.Repositories
 {
-    public class Repository<T> : IRepository<T> where T : class
+    public class Repository<T> : IRepository<T> where T : Entity
     {
         protected readonly DbContext _context;
         protected readonly DbSet<T> _dbSet;
@@ -23,6 +24,11 @@ namespace CS2Ranking.Infrastructure.Repositories
         }
 
         public async Task<IEnumerable<T>> GetAllAsync() => await _dbSet.ToListAsync();
+
+        public async Task<IEnumerable<int>> GetAllIdsAsync()
+        {
+            return await _dbSet.Select(e => e.Id).ToListAsync();
+        }
 
         public async Task<T> AddAsync(T entity)
         {

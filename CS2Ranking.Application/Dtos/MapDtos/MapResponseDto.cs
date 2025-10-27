@@ -1,4 +1,4 @@
-﻿namespace CS2Ranking.Application.Dtos
+﻿namespace CS2Ranking.Application.Dtos.MapDtos
 {
     public class MapResponseDto
     {

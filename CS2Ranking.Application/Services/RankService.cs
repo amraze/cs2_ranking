@@ -1,4 +1,4 @@
-﻿using CS2Ranking.Application.Dtos;
+﻿using CS2Ranking.Application.Dtos.RankDtos;
 using CS2Ranking.Application.Interfaces.IRepositories;
 using CS2Ranking.Application.Interfaces.IServices;
 using CS2Ranking.Domain.Entities;

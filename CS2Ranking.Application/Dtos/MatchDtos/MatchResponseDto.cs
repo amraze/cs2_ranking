@@ -1,6 +1,6 @@
 ﻿using CS2Ranking.Domain.Entities;
 
-namespace CS2Ranking.Application.Dtos
+namespace CS2Ranking.Application.Dtos.MatchDtos
 {
     public class MatchResponseDto
     {

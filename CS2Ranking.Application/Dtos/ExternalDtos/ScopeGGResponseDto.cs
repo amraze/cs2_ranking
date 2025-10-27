@@ -1,4 +1,4 @@
-﻿namespace CS2Ranking.Application.Dtos
+﻿namespace CS2Ranking.Application.Dtos.ExternalDtos
 {
     public class ScopeGGResponseDto
     {

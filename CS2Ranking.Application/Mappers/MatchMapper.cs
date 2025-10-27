@@ -1,6 +1,6 @@
 ﻿namespace CS2Ranking.Application.Mappers
 {
-    using CS2Ranking.Application.Dtos;
+    using CS2Ranking.Application.Dtos.ExternalDtos;
     using CS2Ranking.Domain.ParameterObjects;
     using System.Globalization;
 

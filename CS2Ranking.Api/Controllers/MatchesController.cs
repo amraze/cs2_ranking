@@ -1,4 +1,4 @@
-using CS2Ranking.Application.Dtos;
+using CS2Ranking.Application.Dtos.ExternalDtos;
 using CS2Ranking.Application.Interfaces.IServices;
 using Microsoft.AspNetCore.Mvc;
 
