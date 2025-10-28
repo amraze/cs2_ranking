@@ -9,7 +9,7 @@
         public int Outcome { get; private set; }
         public string Gamemode { get; private set; }
         public string Score { get; private set; }
-        public MatchResult? MatchResult { get; private set; }
+        public MatchResult MatchResult { get; private set; }
         public MatchRank? MatchRank { get; private set; }
 
         // Required by EF Core for materialization

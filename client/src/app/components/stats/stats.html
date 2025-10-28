@@ -12,10 +12,10 @@
         <div class="section-content">
             <div class="row">
                 <div class="col-xl-8">
-                    <app-map-performance></app-map-performance>
+                    <app-map-performance [maps]="maps" [mapPerformance]="mapPerformance"></app-map-performance>
                 </div>
                 <div class="col-xl-4">
-                    <app-global-stats></app-global-stats>
+                    <app-global-stats [maps]="maps" [mapPerformance]="mapPerformance"></app-global-stats>
                 </div>
             </div>
             <div class="row pt-4">

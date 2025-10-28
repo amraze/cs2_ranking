@@ -13,16 +13,11 @@
                     <div class="container">
                         <div class="row">
                             <div class="fs-2 pb-0 col-6 text-start">
-                                {{ mapPerformance[map.id]?.winRate != null
-                                ? (mapPerformance[map.id].winRate | number:'1.1-1')
-                                : '-'
-                                }} %
+                                {{ (mapPerformance[map.id].wins | winRate:mapPerformance[map.id].matches)|
+                                number:'1.0-0' }} %
                             </div>
                             <div class="fs-2 pb-0 col-6 text-end">
-                                {{ mapPerformance[map.id]?.matches != null
-                                ? mapPerformance[map.id].matches
-                                : '-'
-                                }}
+                                {{ mapPerformance[map.id].matches }}
                             </div>
                         </div>
                         <div class="row">

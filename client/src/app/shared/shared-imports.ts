@@ -3,6 +3,7 @@ import { CountResultPipe } from './pipes/count-result';
 import { AverageKdPipe } from './pipes/average-kd';
 import { AverageAdrPipe } from './pipes/average-adr';
 import { RankDifferencePipe } from './pipes/rank-difference';
+import { WinRatePipe } from './pipes/win-rate';
 
 export const SharedImports = [
     CommonModule,
@@ -10,4 +11,5 @@ export const SharedImports = [
     AverageKdPipe,
     AverageAdrPipe,
     RankDifferencePipe,
+    WinRatePipe,
 ];

@@ -31,7 +31,14 @@ namespace CS2Ranking.Application.Services
             {
                 Id = p.Id,
                 Matches = p.Matches,
-                WinRate = p.WinRate
+                Wins = p.Wins,
+                Losses = p.Losses,
+                Draws = p.Draws,
+                Kills = p.Kills,
+                Assists = p.Assists,
+                Deaths = p.Deaths,
+                Adr = p.Adr,
+                Hltv = p.Hltv
             }).ToList();
         }
 

@@ -31,7 +31,14 @@ public class MatchRepository(AppDbContext context) : Repository<Match>(context),
             {
                 Id = g.Key,
                 Matches = g.Count(),
-                WinRate = g.Average(m => m.Outcome == 2 ? 1.0 : 0.0) * 100
+                Wins = g.Count(m => m.Outcome == 2),
+                Losses = g.Count(m => m.Outcome == 0),
+                Draws = g.Count(m => m.Outcome == 1),
+                Kills = g.Sum(m => m.MatchResult.Kills),
+                Assists = g.Sum(m => m.MatchResult.Assists),
+                Deaths = g.Sum(m => m.MatchResult.Deaths),
+                Adr = g.Sum(m => m.MatchResult.Adr),
+                Hltv = g.Sum(m => m.MatchResult.Hltv)
             })
             .ToListAsync();
     }
