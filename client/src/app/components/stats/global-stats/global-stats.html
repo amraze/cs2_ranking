@@ -4,81 +4,142 @@
     </div>
     <div class="global_stats--body">
         <div class="global_stats--content">
-            <div class="stats1">
-                <div class="row">
+            <div class="stats1 per-match-card mt-3">
+                <div class="row" style="height:60px !important">
                     <div class="col-xl-6 col-xxl-3 map">
-                        <div class="title">ADR</div>
-                        <div class="value fs-2">{{ (totalDmg / totalGames) | number:'1.1-1' }}</div>
+                        <div class="stat-card">
+                            <div class="stat-label">ADR</div>
+                            <div class="circular-progress">
+                                <div class="barOverflow progress-ring">
+                                    <div class="bar" [style.--percent]="(totalDmg / totalGames)"></div>
+                                </div>
+                                <div class="stat-center">
+                                    <div class="stat-value">{{ (totalDmg / totalGames) | number:'1.1-1' }}</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-xl-6 col-xxl-3 map">
-                        <div class="title">HTLV</div>
-                        <div class="value fs-2">{{ (totalHltv / totalGames) | number:'1.2-2' }}</div>
+                        <div class="stat-card">
+                            <div class="stat-label">HTLV</div>
+                            <div class="circular-progress">
+                                <div class="barOverflow progress-ring">
+                                    <div class="bar orange" [style.--percent]="((totalHltv / totalGames)/1.4) * 100">
+                                    </div>
+                                </div>
+                                <div class="stat-center">
+                                    <div class="stat-value">{{ (totalHltv / totalGames) | number:'1.2-2' }}</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-xl-6 col-xxl-3 map">
-                        <div class="title">K/D</div>
-                        <div class="value fs-2">{{ (totalKills / totalDeaths) | number:'1.2-2' }}</div>
+                        <div class="stat-card">
+                            <div class="stat-label">K/D</div>
+                            <div class="circular-progress">
+                                <div class="barOverflow progress-ring">
+                                    <div class="bar blue" [style.--percent]="((totalKills / totalDeaths)/1.4) * 100">
+                                    </div>
+                                </div>
+                                <div class="stat-center">
+                                    <div class="stat-value">{{ (totalKills / totalDeaths) | number:'1.2-2' }}</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-xl-6 col-xxl-3 map">
-                        <div class="title">WIN%</div>
-                        <div class="value fs-2">
-                            {{ (totalWins | winRate:totalGames | number:'1.1-1')}} %
+                        <div class="stat-card">
+                            <div class="stat-label">WIN %</div>
+                            <div class="circular-progress">
+                                <div class="barOverflow progress-ring">
+                                    <div class="bar red" [style.--percent]="((totalWins / totalGames)) * 125"></div>
+                                </div>
+                                <div class="stat-center">
+                                    <div class="stat-value">{{ (totalWins | winRate:totalGames | number:'1.1-1')}}</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-5">
-                        <app-chart [chartType]="'doughnut'" [chartData]="winRateData" [chartOptions]="winRateOptions">
-                        </app-chart>
+
+                <div class="per-match-card pt-3 mt-3">
+                    <div class="row">
+                        <div class="col-5">
+                            <div>
+                                <app-chart [chartType]="'doughnut'" [chartData]="winRateData"
+                                    [chartOptions]="winRateOptions">
+                                </app-chart>
+                            </div>
+                        </div>
+                        <div class="col-7 d-flex align-items-center justify-content-center">
+                            <div class="rank-section">
+                                <div class="rank-label">HIGHEST RANK</div>
+                                <div class="rank-value">{{ 4200 | number }}</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-7 pt-4 d-flex align-items-center flex-column">
-                        <div class="title fs-5">Current Rank</div>
-                        <div class="rank text-center ps-2 fw-bold">
-                            <i>{{ 2650 | number }}</i>
+                </div>
+
+            </div>
+
+            <!-- KAD Stats -->
+            <div class=" stats2 kad my-3">
+                <div class="row">
+                    <div class="col-4">
+                        <div class="perf-card kills-card">
+                            <div class="perf-label">KILLS</div>
+                            <div class="perf-value">{{totalKills | number}}</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="perf-card deaths-card">
+                            <div class="perf-label">DEATHS</div>
+                            <div class="perf-value">{{totalDeaths | number}}</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="perf-card assists-card">
+                            <div class="perf-label">ASSISTS</div>
+                            <div class="perf-value">{{totalAssists | number}}</div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="stats2 kad">
-                <div class="row">
-                    <div class="col-4">
-                        <div class="title">KILLS</div>
-                        <div class="value fs-2">{{totalKills| number }}</div>
-                    </div>
-                    <div class="col-4">
-                        <div class="title">DEATHS</div>
-                        <div class="value fs-2">{{totalDeaths| number }}</div>
-                    </div>
-                    <div class="col-4">
-                        <div class="title">ASSISTS</div>
-                        <div class="value fs-2">{{totalAssists| number }}</div>
-                    </div>
-                </div>
-            </div>
+
+            <!-- Radar and Per Match Stats -->
             <div class="stats3">
                 <div class="row">
-                    <div class="col-8">
-                        <div>
+                    <div class="col-7">
+                        <div class="radar-container">
                             <app-chart [chartType]="'radar'" [chartData]="mapData" [chartOptions]="mapOptions">
                             </app-chart>
                         </div>
                     </div>
-                    <div class="col-4">
-                        <div class="d-flex flex-column h-100 justify-content-evenly">
-                            <div>
-                                <div class="title">TOTAL GAMES</div>
-                                <div class="value fs-2">{{totalGames}}</div>
+                    <div class="col-5">
+                        <div class="d-flex flex-column h-100 justify-content-evenly per-match-card p-0 px-3">
+                            <div class="total-games-section">
+                                <div class="total-games-label">TOTAL GAMES</div>
+                                <div class="total-games-value">{{totalGames}}</div>
                             </div>
-                            <div>
-                                <div class="title">KILLS / MATCH</div>
-                                <div class="value fs-2">{{ (totalKills / totalGames) | number:'1.1-1' }}</div>
+                            <div class="per-match-card">
+                                <div class="per-match-label">KILLS / MATCH</div>
+                                <div class="per-match-value">{{ (totalKills / totalGames) |
+                                    number:'1.1-1' }}</div>
+                                <div class="per-match-bar">
+                                    <div class="per-match-bar-fill"
+                                        [style.width.%]="((totalKills / totalGames) / 25 * 100)">
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <div class="title">DEATHS / MATCH</div>
-                                <div class="value fs-2">{{ (totalDeaths / totalGames) | number:'1.1-1' }}</div>
-                            </div>
-                            <div>
-                                <div class="title">ASSISTS / MATCH</div>
-                                <div class="value fs-2">{{ (totalAssists / totalGames) | number:'1.1-1' }}</div>
+                            <div class="per-match-card">
+                                <div class="per-match-label">DEATHS / MATCH</div>
+                                <div class="per-match-value">{{ (totalDeaths / totalGames) |
+                                    number:'1.1-1' }}</div>
+                                <div class="per-match-bar">
+                                    <div class="per-match-bar-fill red"
+                                        [style.width.%]="((totalDeaths / totalGames) / 25 * 100)">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

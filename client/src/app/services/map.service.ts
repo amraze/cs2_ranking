@@ -30,7 +30,7 @@ export class MapService {
     );
   }
 
-  getMapPerformance(season: Season | undefined): Observable<MapPerformanceResponseDto[]> {
+  getMapPerformance(season: Season | null): Observable<MapPerformanceResponseDto[]> {
     const key = this.mapPerformanceCache.generateKey({
       entity: this.keyName2,
     });

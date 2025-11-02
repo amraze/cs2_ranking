@@ -19,7 +19,7 @@ export class Stats implements OnInit {
   maps: Map[] = [];
   seasons: Season[] = [];
   mapPerformance: { [id: string]: MapPerformanceResponseDto } = {};
-  selectedSeason: Season | undefined;
+  selectedSeason: Season | null = null;
   constructor(private _mapService: MapService, private _seasonService: SeasonService) { }
 
   ngOnInit(): void {
@@ -63,7 +63,7 @@ export class Stats implements OnInit {
   handleSeasonChange(value: string): void {
     this.selectedSeason = this.seasons.find(
       season => season.id === parseInt(value, 10)
-    );
+    ) ?? null;
 
     this._mapService.clearMapPerformanceCache();
     this._mapService.clearMapsCache();

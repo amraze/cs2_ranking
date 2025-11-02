@@ -100,7 +100,9 @@ export class GlobalStats {
   private prepareMapData(): void {
     const maps = this.mapsSignal();
     const performance = this.mapPerformanceSignal();
-    const labels = maps.filter(m => m.name).map(m => m.name);
+    const labels = maps
+      .filter(m => m.name)
+      .map(m => m.name.split('_')[1]);
     const data = maps.map(m => {
       const p = performance[m.id];
       return p && p.matches > 0 ? (p.wins / p.matches) * 100 : 0;
