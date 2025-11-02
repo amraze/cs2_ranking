@@ -2,10 +2,9 @@
     <h3 class="header mb-2 fw-bold">
         <span>Statistics</span>
         <span class="px-2">•</span>
-        <select class="px-2">
+        <select class="px-2" (change)="selectSeason($event)">
             <option value="0">All Time</option>
-            <option value="0">Season 2</option>
-            <option value="0">Season 3</option>
+            <option *ngFor="let season of seasons; index as i" [value]="season?.id">Season {{i+1}} </option>
         </select>
     </h3>
     <div class="section-container">
@@ -19,7 +18,7 @@
                 </div>
             </div>
             <div class="row pt-4">
-                <app-total-evolution></app-total-evolution>
+                <app-evolution [season]="selectedSeason"></app-evolution>
             </div>
         </div>
     </div>

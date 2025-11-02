@@ -23,9 +23,9 @@ namespace CS2Ranking.Application.Services
             return mapDtos;
         }
 
-        public async Task<IEnumerable<MapPerformanceResponseDto>> GetAllMapPerformanceAsync()
+        public async Task<IEnumerable<MapPerformanceResponseDto>> GetAllMapPerformanceAsync(DateTime? start, DateTime? end)
         {
-            var performance = await _matchRepository.GetAllMapPerformanceAsync();
+            var performance = await _matchRepository.GetAllMapPerformanceAsync(start, end);
 
             return performance.Select(p => new MapPerformanceResponseDto
             {

@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, tap } from 'rxjs';
 import { Match } from '../shared/models/match.interface';
 import { CacheManager } from '../shared/utils/cache-manager';
+import { Season } from '../shared/models/season.interface';
+import { EvolutionResponseDto } from '../shared/models/evolution-response-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +12,7 @@ import { CacheManager } from '../shared/utils/cache-manager';
 export class MatchService {
   private url = 'http://localhost:5130/api/matches';
   private cacheManager = new CacheManager<Match[][]>();
+  private statsCacheManager = new CacheManager<EvolutionResponseDto[]>();
 
   constructor(private http: HttpClient) { }
 
@@ -25,6 +28,23 @@ export class MatchService {
       tap(data => this.cacheManager.set(key, data))
     );
   }
+
+  getStatsEvolution(season: Season | null): Observable<EvolutionResponseDto[]> {
+    const key = this.statsCacheManager.generateKey({
+      entity: 'statsEvolution',
+    });
+    const cached = this.statsCacheManager.get(key);
+    if (cached) return of(cached);
+
+    let params = new HttpParams();
+    if (season?.startDate) params = params.set('start', new Date(season.startDate).toISOString());
+    if (season?.endDate) params = params.set('end', new Date(season.endDate).toISOString());
+
+    return this.http.get<EvolutionResponseDto[]>(`${this.url}/evolution`, { params }).pipe(
+      tap(data => this.statsCacheManager.set(key, data))
+    );
+  }
+
 
   importMatches(sheetsLink: string): Observable<void> {
     return this.http.post<void>(`${this.url}/import`, { sheetLink: sheetsLink });

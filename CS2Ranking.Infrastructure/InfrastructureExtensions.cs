@@ -13,6 +13,7 @@ namespace CS2Ranking.Infrastructure
             services.AddScoped<IMatchRepository, MatchRepository>();
             services.AddScoped<IMapRepository, MapRepository>();
             services.AddScoped<IRankRepository, RankRepository>();
+            services.AddScoped<ISeasonRepository, SeasonRepository>();
             services.AddHttpClient<IGoogleSheetsService, GoogleSheetsService>();
             services.AddHttpClient<IScopeGGService, ScopeGGService>();
             services.AddHostedService<ScopeGGStartupService>();

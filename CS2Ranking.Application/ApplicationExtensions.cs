@@ -11,6 +11,7 @@ namespace CS2Ranking.Application
             services.AddScoped<IMapService, MapService>();
             services.AddScoped<IMatchService, MatchService>();
             services.AddScoped<IRankService, RankService>();
+            services.AddScoped<ISeasonService, SeasonService>();
             return services;
         }
     }

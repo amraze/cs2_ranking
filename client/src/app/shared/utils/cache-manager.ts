@@ -31,4 +31,8 @@ export class CacheManager<T> {
     clear(): void {
         this.cache.clear();
     }
+
+    delete(key: string): void {
+        this.cache.delete(key);
+    }
 }

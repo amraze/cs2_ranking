@@ -23,22 +23,31 @@ public class MatchRepository(AppDbContext context) : Repository<Match>(context),
         return await query.ToListAsync();
     }
 
-    public async Task<IEnumerable<MapPerformance>> GetAllMapPerformanceAsync()
+    public async Task<IEnumerable<MapPerformance>> GetAllMapPerformanceAsync(DateTime? start, DateTime? end)
     {
-        return await _dbSet
-            .GroupBy(m => m.MapId)
+
+        var query = _dbSet.AsQueryable();
+
+        if (start.HasValue)
+            query = query.Where(match => match.Datetime >= start.Value);
+
+        if (end.HasValue)
+            query = query.Where(match => match.Datetime <= end.Value);
+
+        return await query
+            .GroupBy(match => match.MapId)
             .Select(g => new MapPerformance
             {
                 Id = g.Key,
                 Matches = g.Count(),
-                Wins = g.Count(m => m.Outcome == 2),
-                Losses = g.Count(m => m.Outcome == 0),
-                Draws = g.Count(m => m.Outcome == 1),
-                Kills = g.Sum(m => m.MatchResult.Kills),
-                Assists = g.Sum(m => m.MatchResult.Assists),
-                Deaths = g.Sum(m => m.MatchResult.Deaths),
-                Adr = g.Sum(m => m.MatchResult.Adr),
-                Hltv = g.Sum(m => m.MatchResult.Hltv)
+                Wins = g.Count(match => match.Outcome == 2),
+                Losses = g.Count(match => match.Outcome == 0),
+                Draws = g.Count(match => match.Outcome == 1),
+                Kills = g.Sum(match => match.MatchResult.Kills),
+                Assists = g.Sum(match => match.MatchResult.Assists),
+                Deaths = g.Sum(match => match.MatchResult.Deaths),
+                Adr = g.Sum(match => match.MatchResult.Adr),
+                Hltv = g.Sum(match => match.MatchResult.Hltv)
             })
             .ToListAsync();
     }

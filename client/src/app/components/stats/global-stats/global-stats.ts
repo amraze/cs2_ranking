@@ -1,5 +1,5 @@
-import { Component, effect, Input, OnInit, signal } from '@angular/core';
-import { ChartData, ChartOptions, ChartType } from 'chart.js';
+import { Component, effect, Input, signal } from '@angular/core';
+import { ChartData, ChartOptions } from 'chart.js';
 import { SharedImports } from '../../../shared/shared-imports';
 import { ChartComponent } from '../../../shared/components/chart/chart';
 import { MapPerformanceResponseDto } from '../../../shared/models/map-performance-response-dto';
@@ -106,11 +106,24 @@ export class GlobalStats {
       return p && p.matches > 0 ? (p.wins / p.matches) * 100 : 0;
     });
 
+    const maxValue = data.length ? Math.min(Math.max(...data) + 10, 100) : 100;
+
     this.mapData = {
       labels: labels,
       datasets: [{
         data: data
       }]
+    };
+
+    this.mapOptions = {
+      ...this.mapOptions,
+      scales: {
+        ...(this.mapOptions.scales || {}),
+        ['r']: {
+          ...((this.mapOptions.scales?.['r']) || {}),
+          max: maxValue
+        }
+      }
     };
   }
 
@@ -132,7 +145,18 @@ export class GlobalStats {
     };
   }
 
+  private initializeGlobalStatsData(): void {
+    this.totalKills = 0;
+    this.totalDeaths = 0;
+    this.totalAssists = 0;
+    this.totalHltv = 0;
+    this.totalDmg = 0;
+    this.totalGames = 0;
+    this.totalWins = 0;
+  }
+
   private prepareGlobalStatsData(): void {
+    this.initializeGlobalStatsData();
     const performance = this.mapPerformanceSignal();
     for (const p of Object.values(performance)) {
       this.totalKills += p.kills;

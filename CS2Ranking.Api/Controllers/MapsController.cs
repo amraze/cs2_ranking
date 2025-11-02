@@ -23,11 +23,11 @@ namespace CS2Ranking.Api.Controllers
         }
 
         [HttpGet("performances")]
-        public async Task<IActionResult> GetAllMapPerformance()
+        public async Task<IActionResult> GetAllMapPerformance([FromQuery] DateTime? start, [FromQuery] DateTime? end)
         {
             try
             {
-                var performances = await _mapService.GetAllMapPerformanceAsync();
+                var performances = await _mapService.GetAllMapPerformanceAsync(start, end);
                 if (performances == null)
                     return NotFound();
 

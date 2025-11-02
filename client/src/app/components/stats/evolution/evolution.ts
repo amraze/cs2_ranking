@@ -1,26 +1,35 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ChartData, ChartOptions, ChartType } from 'chart.js';
 import { SharedImports } from '../../../shared/shared-imports';
 import { ChartComponent } from '../../../shared/components/chart/chart';
+import { MatchService } from '../../../services/match.service';
+import { Season } from '../../../shared/models/season.interface';
+import { EvolutionResponseDto } from '../../../shared/models/evolution-response-dto';
 
 @Component({
-  selector: 'app-total-evolution',
+  selector: 'app-evolution',
   imports: [SharedImports, ChartComponent],
-  templateUrl: './total-evolution.html',
-  styleUrl: './total-evolution.scss'
+  templateUrl: './evolution.html',
+  styleUrl: './evolution.scss'
 })
-export class TotalEvolution {
-  labels = Array.from({ length: 100 }, (_, i) => (i + 1).toString());
-  data = this.labels.reduce((acc, _, i) => {
-    const prev = acc[i - 1] ?? 50;
-    acc.push(Math.min(prev + Math.random() * (0.5 + (80 - prev) / (this.labels.length - i)), 80));
-    return acc;
-  }, [] as number[]);
+export class Evolution implements OnInit {
+  @Input() season: Season | null = null;
+  private statsEvolution: EvolutionResponseDto[] = [];
+  constructor(private _matchService: MatchService) { }
 
+  ngOnInit(): void {
+    this.getStatsEvolution();
+  }
+
+  getStatsEvolution(): void {
+    this._matchService.getStatsEvolution(this.season).subscribe(response => {
+      this.statsEvolution = response;
+    })
+  }
   mapData: ChartData<ChartType> = {
-    labels: this.labels,
+    labels: ["W1", "W2", "W3"],
     datasets: [{
-      data: this.data,
+      data: [30, 40, 75],
     }]
   };
 
