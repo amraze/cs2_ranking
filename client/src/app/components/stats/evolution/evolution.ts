@@ -16,6 +16,7 @@ export class Evolution implements OnInit {
   seasonsSignal = signal<Season[]>([]);
   statsEvolutionSignal = signal<EvolutionResponseDto[]>([]);
   hiddenSeasons = signal<Set<number>>(new Set());
+  @Input() selectedSeason: Season | null = null;
 
   @Input() set seasons(value: Season[]) {
     this.seasonsSignal.set(value || []);
@@ -23,6 +24,7 @@ export class Evolution implements OnInit {
 
   ranksData: ChartData<'line', (number | null)[]> = { labels: [], datasets: [] };
   adrData: ChartData<'line', (number | null)[]> = { labels: [], datasets: [] };
+  hltvData: ChartData<'line', (number | null)[]> = { labels: [], datasets: [] };
   kdData: ChartData<'line', (number | null)[]> = { labels: [], datasets: [] };
 
   constructor(private _matchService: MatchService) {
@@ -35,6 +37,7 @@ export class Evolution implements OnInit {
         this.prepareRanksData(seasons, statsEvolution);
         this.prepareAdrData(seasons, statsEvolution);
         this.prepareKdData(seasons, statsEvolution);
+        this.prepareHltvData(seasons, statsEvolution);
       }
     });
   }
@@ -235,7 +238,7 @@ export class Evolution implements OnInit {
       };
     });
 
-    this.adrData = {
+    this.hltvData = {
       labels: labels,
       datasets: datasets
     };
@@ -485,7 +488,7 @@ export class Evolution implements OnInit {
       y: {
         ticks: { color: 'white' },
         grid: { color: 'rgba(255, 255, 255, 0.2)' },
-        min: 1,
+        min: 0.9,
         max: 1.2
       },
       x: {
