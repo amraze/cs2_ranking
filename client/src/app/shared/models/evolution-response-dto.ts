@@ -5,4 +5,6 @@ export interface EvolutionResponseDto {
     kills: number;
     deaths: number;
     rank: number;
+    hltv: number;
+    total: number;
 }

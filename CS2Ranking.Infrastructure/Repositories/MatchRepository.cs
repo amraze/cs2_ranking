@@ -1,9 +1,11 @@
-﻿using CS2Ranking.Application.Interfaces.IRepositories;
+﻿using CS2Ranking.Application.Dtos.MatchDtos;
+using CS2Ranking.Application.Interfaces.IRepositories;
 using CS2Ranking.Application.Models;
 using CS2Ranking.Domain.Entities;
 using CS2Ranking.Infrastructure;
 using CS2Ranking.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 public class MatchRepository(AppDbContext context) : Repository<Match>(context), IMatchRepository
 {
@@ -52,4 +54,27 @@ public class MatchRepository(AppDbContext context) : Repository<Match>(context),
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<MatchEvolution>> GetEvolutionAsync()
+    {
+        var query = await _dbSet
+            .Include(m => m.MatchRank)
+            .Include(m => m.MatchResult)
+            .Where(m => m.Gamemode == "premier")
+            .OrderByDescending(m => m.Id)
+            .ToListAsync();
+
+        return query
+            .GroupBy(m => m.Datetime.Date)
+            .Select(g => new MatchEvolution
+            {
+                MatchDate = g.Key,
+                Adr = g.Sum(m => m.MatchResult.Adr),
+                Kills = g.Sum(m => m.MatchResult.Kills),
+                Deaths = g.Sum(m => m.MatchResult.Deaths),
+                Hltv = g.Sum(m => m.MatchResult.Hltv),
+                Rank = g.OrderByDescending(m => m.Id).First().MatchRank.RankScore,
+                Total = g.Count()
+            })
+            .OrderBy(x => x.MatchDate);
+    }
 }

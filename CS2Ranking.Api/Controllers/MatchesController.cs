@@ -37,5 +37,19 @@ namespace CS2Ranking.Api.Controllers
             }
         }
 
+        [HttpGet("evolution")]
+        public async Task<IActionResult> GetEvolution()
+        {
+            try
+            {
+                var evolution = await _matchService.GetEvolutionAsync();
+                return Ok(evolution);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error getting evolution: {ex.Message}");
+            }
+        }
+
     }
 }

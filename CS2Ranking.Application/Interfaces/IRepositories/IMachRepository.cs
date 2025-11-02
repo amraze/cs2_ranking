@@ -6,6 +6,7 @@ namespace CS2Ranking.Application.Interfaces.IRepositories
     public interface IMatchRepository : IRepository<Match>
     {
         Task<IEnumerable<Match>> GetWithDetailsAsync(int? limit = null, int? offset = null);
+        Task<IEnumerable<MatchEvolution>> GetEvolutionAsync();
         Task<IEnumerable<MapPerformance>> GetAllMapPerformanceAsync(DateTime? start, DateTime? end);
     }
 }

@@ -56,5 +56,23 @@ namespace CS2Ranking.Application.Services
 
             return grouped;
         }
+
+        public async Task<IEnumerable<EvolutionResponseDto>> GetEvolutionAsync()
+        {
+            var evolutions = await _matchRepository.GetEvolutionAsync();
+
+            return evolutions.Select(e => new EvolutionResponseDto
+            {
+                MatchDate = e.MatchDate,
+                Adr = e.Adr,
+                Rank = e.Rank,
+                Kills = e.Kills,
+                Deaths = e.Deaths,
+                Hltv = e.Hltv,
+                Total = e.Total,
+            });
+
+
+        }
     }
 }

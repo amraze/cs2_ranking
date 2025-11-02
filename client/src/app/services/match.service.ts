@@ -29,7 +29,7 @@ export class MatchService {
     );
   }
 
-  getStatsEvolution(season: Season | null): Observable<EvolutionResponseDto[]> {
+  getStatsEvolution(): Observable<EvolutionResponseDto[]> {
     const key = this.statsCacheManager.generateKey({
       entity: 'statsEvolution',
     });
@@ -37,8 +37,6 @@ export class MatchService {
     if (cached) return of(cached);
 
     let params = new HttpParams();
-    if (season?.startDate) params = params.set('start', new Date(season.startDate).toISOString());
-    if (season?.endDate) params = params.set('end', new Date(season.endDate).toISOString());
 
     return this.http.get<EvolutionResponseDto[]>(`${this.url}/evolution`, { params }).pipe(
       tap(data => this.statsCacheManager.set(key, data))

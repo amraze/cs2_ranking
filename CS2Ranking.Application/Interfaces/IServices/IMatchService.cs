@@ -5,5 +5,6 @@ namespace CS2Ranking.Application.Interfaces.IServices
     {
         Task ImportFromSheetAsync(string sheetLink);
         Task<IEnumerable<IGrouping<DateTime, MatchResponseDto>>> GetGroupedMatchesAsync(int? limit, int? offset);
+        Task<IEnumerable<EvolutionResponseDto>> GetEvolutionAsync();
     }
 }
