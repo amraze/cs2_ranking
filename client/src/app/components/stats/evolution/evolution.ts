@@ -14,9 +14,12 @@ import { EvolutionResponseDto } from '../../../shared/models/evolution-response-
 })
 export class Evolution implements OnInit {
   seasonsSignal = signal<Season[]>([]);
+  selectedSeasonSignal = signal<Season | null>(null);
   statsEvolutionSignal = signal<EvolutionResponseDto[]>([]);
   hiddenSeasons = signal<Set<number>>(new Set());
-  @Input() selectedSeason: Season | null = null;
+  @Input() set selectedSeason(value: Season | null) {
+    this.selectedSeasonSignal.set(value);
+  }
 
   @Input() set seasons(value: Season[]) {
     this.seasonsSignal.set(value || []);
@@ -29,9 +32,11 @@ export class Evolution implements OnInit {
 
   constructor(private _matchService: MatchService) {
     effect(() => {
-      const seasons = this.seasonsSignal();
+      let seasons = this.seasonsSignal();
       const statsEvolution = this.statsEvolutionSignal();
       const hidden = this.hiddenSeasons();
+      const selected = this.selectedSeasonSignal();
+      if (selected) seasons = [selected];
 
       if (seasons.length > 0 && statsEvolution.length > 0) {
         this.prepareRanksData(seasons, statsEvolution);
@@ -60,7 +65,7 @@ export class Evolution implements OnInit {
       originalIndex: index,
       startDate: new Date(season.startDate),
       endDate: new Date(season.endDate),
-      label: `Season ${index + 1}`,
+      label: `Season ${season.id}`,
       isHidden: hidden.has(index)
     }));
 
@@ -115,7 +120,7 @@ export class Evolution implements OnInit {
       originalIndex: index,
       startDate: new Date(season.startDate),
       endDate: new Date(season.endDate),
-      label: `Season ${index + 1}`,
+      label: `Season ${season.id}`,
       isHidden: hidden.has(index)
     }));
 
@@ -183,7 +188,7 @@ export class Evolution implements OnInit {
       originalIndex: index,
       startDate: new Date(season.startDate),
       endDate: new Date(season.endDate),
-      label: `Season ${index + 1}`,
+      label: `Season ${season.id}`,
       isHidden: hidden.has(index)
     }));
 
@@ -251,7 +256,7 @@ export class Evolution implements OnInit {
       originalIndex: index,
       startDate: new Date(season.startDate),
       endDate: new Date(season.endDate),
-      label: `Season ${index + 1}`,
+      label: `Season ${season.id}`,
       isHidden: hidden.has(index)
     }));
 
