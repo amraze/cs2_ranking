@@ -14,14 +14,14 @@
                         <div class="map-name">{{map.name}}</div>
                         <div class="map-stats">
                             <div class="win-rate">
-                                {{ mapPerformance[map.id]?.wins != null
+                                {{ mapPerformance[map.id]!.wins != null
                                 ? ((mapPerformance[map.id].wins | winRate:mapPerformance[map.id].matches)|
                                 number:'1.0-0')
                                 : '-'
                                 }}%
                             </div>
                             <div class="matches">
-                                {{ mapPerformance[map.id]?.matches || '-' }} matches
+                                {{ mapPerformance[map.id]!.matches || '-' }} matches
                             </div>
                         </div>
                     </div>

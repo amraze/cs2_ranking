@@ -23,7 +23,7 @@ namespace CS2Ranking.Infrastructure.Repositories
             return entity ?? throw new KeyNotFoundException($"Entity of type {typeof(T).Name} with ID {id} not found.");
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync() => await _dbSet.ToListAsync();
+        public async Task<IEnumerable<T>> GetAllAsync() =>  await _dbSet.ToListAsync();
 
         public async Task<IEnumerable<int>> GetAllIdsAsync()
         {
