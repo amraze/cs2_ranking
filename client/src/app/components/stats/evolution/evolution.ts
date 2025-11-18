@@ -57,7 +57,18 @@ export class Evolution implements OnInit {
     })
   }
 
-  //----- Prepare Charts section
+  private getAllDatesBetween(startDate: Date, endDate: Date): Date[] {
+    const dates: Date[] = [];
+    const current = new Date(startDate);
+
+    while (current <= endDate) {
+      dates.push(new Date(current));
+      current.setDate(current.getDate() + 1);
+    }
+
+    return dates;
+  }
+
   private prepareRanksData(seasons: Season[], statsEvolution: EvolutionResponseDto[]): void {
     const hidden = this.hiddenSeasons();
 
@@ -69,47 +80,126 @@ export class Evolution implements OnInit {
       isHidden: hidden.has(index)
     }));
 
-    const visiblePeriods = allPeriods.filter(p => !p.isHidden);
-
-    const visibleStats = statsEvolution.filter(stat => {
-      const date = new Date(stat.matchDate);
-      return visiblePeriods.some(period =>
-        date >= period.startDate && date <= period.endDate
-      );
+    // Create a map of actual stats by date
+    const statsMap = new Map<string, EvolutionResponseDto>();
+    statsEvolution.forEach(stat => {
+      const dateKey = new Date(stat.matchDate).toDateString();
+      statsMap.set(dateKey, stat);
     });
 
-    const labels = visibleStats.map(stat => {
-      const date = new Date(stat.matchDate);
-      return `${date.getDate()}/${date.getMonth() + 1}`;
-    });
-
+    // Build datasets with dates per period
     const datasets = allPeriods.map(period => {
-      let data: (number | null)[];
-
       if (period.isHidden) {
-        data = new Array(visibleStats.length).fill(null);
-      } else {
-        data = visibleStats.map(stat => {
-          const date = new Date(stat.matchDate);
-          if (date >= period.startDate && date <= period.endDate) {
-            return stat.rank;
-          }
-          return null;
-        });
+        return {
+          label: period.label,
+          data: [],
+          fill: true,
+          spanGaps: true,
+          hidden: true
+        };
       }
+
+      // Get matches in this period only
+      const periodMatches = statsEvolution.filter(stat => {
+        const date = new Date(stat.matchDate);
+        return date >= period.startDate && date <= period.endDate;
+      });
+
+      if (periodMatches.length === 0) {
+        return {
+          label: period.label,
+          data: [],
+          fill: true,
+          spanGaps: true,
+          hidden: false
+        };
+      }
+
+      // Get first and last match date in this period
+      const matchDates = periodMatches.map(m => new Date(m.matchDate));
+      const minDate = new Date(Math.min(...matchDates.map(d => d.getTime())));
+      const maxDate = new Date(Math.max(...matchDates.map(d => d.getTime())));
+
+      // Fill dates between first and last match in THIS period only
+      const periodDates = this.getAllDatesBetween(minDate, maxDate);
+
+      let lastValue: number | null = null;
+      const data = periodDates.map(date => {
+        const dateKey = date.toDateString();
+        const stat = statsMap.get(dateKey);
+
+        if (stat) {
+          lastValue = stat.rank;
+          return lastValue;
+        } else {
+          return lastValue;
+        }
+      });
 
       return {
         label: period.label,
         data: data,
+        dates: periodDates, // Store dates for this period
         fill: true,
-        spanGaps: false,
-        hidden: period.isHidden
+        spanGaps: true,
+        hidden: false
+      };
+    });
+
+    // Get all unique dates across all visible datasets, sorted
+    const allDatesSet = new Set<string>();
+    datasets.forEach((dataset: any) => {
+      if (!dataset.hidden && dataset.dates) {
+        dataset.dates.forEach((date: Date) => allDatesSet.add(date.toDateString()));
+      }
+    });
+
+    const allDates = Array.from(allDatesSet)
+      .map(dateStr => new Date(dateStr))
+      .sort((a, b) => a.getTime() - b.getTime());
+
+    // Generate labels
+    const labels = allDates.map(date => {
+      const day = date.getDate();
+      const month = date.toLocaleString('en-US', { month: 'short' });
+      return `${day} ${month}`;
+    });
+
+    // Rebuild datasets with aligned data
+    const finalDatasets = datasets.map((dataset: any) => {
+      if (dataset.hidden || !dataset.dates) {
+        return {
+          label: dataset.label,
+          data: new Array(allDates.length).fill(null),
+          fill: true,
+          spanGaps: true,
+          hidden: dataset.hidden
+        };
+      }
+
+      // Create a map of this period's data
+      const periodDataMap = new Map<string, number | null>();
+      dataset.dates.forEach((date: Date, idx: number) => {
+        periodDataMap.set(date.toDateString(), dataset.data[idx]);
+      });
+
+      // Align data to global dates
+      const alignedData = allDates.map(date => {
+        return periodDataMap.get(date.toDateString()) ?? null;
+      });
+
+      return {
+        label: dataset.label,
+        data: alignedData,
+        fill: true,
+        spanGaps: true,
+        hidden: false
       };
     });
 
     this.ranksData = {
       labels: labels,
-      datasets: datasets
+      datasets: finalDatasets
     };
   }
 
@@ -124,60 +214,123 @@ export class Evolution implements OnInit {
       isHidden: hidden.has(index)
     }));
 
-    const visiblePeriods = allPeriods.filter(p => !p.isHidden);
-
-    const visibleStats = statsEvolution.filter(stat => {
-      const date = new Date(stat.matchDate);
-      return visiblePeriods.some(period =>
-        date >= period.startDate && date <= period.endDate
-      );
-    });
-
+    // Calculate progressive ADR
     let cumulativeAdr = 0;
     let cumulativeTotal = 0;
 
-    const statsWithProgressiveAdr = visibleStats.map(stat => {
+    const statsMap = new Map<string, number>();
+    statsEvolution.forEach(stat => {
       cumulativeAdr += stat.adr;
       cumulativeTotal += stat.total;
-
-      return {
-        ...stat,
-        progressiveAvgAdr: cumulativeTotal > 0 ? cumulativeAdr / cumulativeTotal : 0
-      };
-    });
-
-    const labels = statsWithProgressiveAdr.map(stat => {
-      const date = new Date(stat.matchDate);
-      return `${date.getDate()}/${date.getMonth() + 1}`;
+      const progressiveAvgAdr = cumulativeTotal > 0 ? cumulativeAdr / cumulativeTotal : 0;
+      const dateKey = new Date(stat.matchDate).toDateString();
+      statsMap.set(dateKey, progressiveAvgAdr);
     });
 
     const datasets = allPeriods.map(period => {
-      let data: (number | null)[];
-
       if (period.isHidden) {
-        data = new Array(statsWithProgressiveAdr.length).fill(null);
-      } else {
-        data = statsWithProgressiveAdr.map(stat => {
-          const date = new Date(stat.matchDate);
-          if (date >= period.startDate && date <= period.endDate) {
-            return stat.progressiveAvgAdr;
-          }
-          return null;
-        });
+        return {
+          label: period.label,
+          data: [],
+          fill: false,
+          spanGaps: true,
+          hidden: true
+        };
       }
+
+      const periodMatches = statsEvolution.filter(stat => {
+        const date = new Date(stat.matchDate);
+        return date >= period.startDate && date <= period.endDate;
+      });
+
+      if (periodMatches.length === 0) {
+        return {
+          label: period.label,
+          data: [],
+          fill: false,
+          spanGaps: true,
+          hidden: false
+        };
+      }
+
+      const matchDates = periodMatches.map(m => new Date(m.matchDate));
+      const minDate = new Date(Math.min(...matchDates.map(d => d.getTime())));
+      const maxDate = new Date(Math.max(...matchDates.map(d => d.getTime())));
+
+      const periodDates = this.getAllDatesBetween(minDate, maxDate);
+
+      let lastValue: number | null = null;
+      const data = periodDates.map(date => {
+        const dateKey = date.toDateString();
+        const value = statsMap.get(dateKey);
+
+        if (value !== undefined) {
+          lastValue = value;
+          return lastValue;
+        } else {
+          return lastValue;
+        }
+      });
 
       return {
         label: period.label,
         data: data,
+        dates: periodDates,
         fill: false,
-        spanGaps: false,
-        hidden: period.isHidden
+        spanGaps: true,
+        hidden: false
+      };
+    });
+
+    const allDatesSet = new Set<string>();
+    datasets.forEach((dataset: any) => {
+      if (!dataset.hidden && dataset.dates) {
+        dataset.dates.forEach((date: Date) => allDatesSet.add(date.toDateString()));
+      }
+    });
+
+    const allDates = Array.from(allDatesSet)
+      .map(dateStr => new Date(dateStr))
+      .sort((a, b) => a.getTime() - b.getTime());
+
+    const labels = allDates.map(date => {
+      const day = date.getDate();
+      const month = date.toLocaleString('en-US', { month: 'short' });
+      return `${day} ${month}`;
+    });
+
+    const finalDatasets = datasets.map((dataset: any) => {
+      if (dataset.hidden || !dataset.dates) {
+        return {
+          label: dataset.label,
+          data: new Array(allDates.length).fill(null),
+          fill: false,
+          spanGaps: true,
+          hidden: dataset.hidden
+        };
+      }
+
+      const periodDataMap = new Map<string, number | null>();
+      dataset.dates.forEach((date: Date, idx: number) => {
+        periodDataMap.set(date.toDateString(), dataset.data[idx]);
+      });
+
+      const alignedData = allDates.map(date => {
+        return periodDataMap.get(date.toDateString()) ?? null;
+      });
+
+      return {
+        label: dataset.label,
+        data: alignedData,
+        fill: false,
+        spanGaps: true,
+        hidden: false
       };
     });
 
     this.adrData = {
       labels: labels,
-      datasets: datasets
+      datasets: finalDatasets
     };
   }
 
@@ -192,60 +345,122 @@ export class Evolution implements OnInit {
       isHidden: hidden.has(index)
     }));
 
-    const visiblePeriods = allPeriods.filter(p => !p.isHidden);
-
-    const visibleStats = statsEvolution.filter(stat => {
-      const date = new Date(stat.matchDate);
-      return visiblePeriods.some(period =>
-        date >= period.startDate && date <= period.endDate
-      );
-    });
-
     let cumulativeHltv = 0;
     let cumulativeTotal = 0;
 
-    const statsWithProgressiveHltv = visibleStats.map(stat => {
+    const statsMap = new Map<string, number>();
+    statsEvolution.forEach(stat => {
       cumulativeHltv += stat.hltv;
       cumulativeTotal += stat.total;
-
-      return {
-        ...stat,
-        progressiveAvgHltv: cumulativeTotal > 0 ? cumulativeHltv / cumulativeTotal : 0
-      };
-    });
-
-    const labels = statsWithProgressiveHltv.map(stat => {
-      const date = new Date(stat.matchDate);
-      return `${date.getDate()}/${date.getMonth() + 1}`;
+      const progressiveAvgHltv = cumulativeTotal > 0 ? cumulativeHltv / cumulativeTotal : 0;
+      const dateKey = new Date(stat.matchDate).toDateString();
+      statsMap.set(dateKey, progressiveAvgHltv);
     });
 
     const datasets = allPeriods.map(period => {
-      let data: (number | null)[];
-
       if (period.isHidden) {
-        data = new Array(statsWithProgressiveHltv.length).fill(null);
-      } else {
-        data = statsWithProgressiveHltv.map(stat => {
-          const date = new Date(stat.matchDate);
-          if (date >= period.startDate && date <= period.endDate) {
-            return stat.progressiveAvgHltv;
-          }
-          return null;
-        });
+        return {
+          label: period.label,
+          data: [],
+          fill: false,
+          spanGaps: true,
+          hidden: true
+        };
       }
+
+      const periodMatches = statsEvolution.filter(stat => {
+        const date = new Date(stat.matchDate);
+        return date >= period.startDate && date <= period.endDate;
+      });
+
+      if (periodMatches.length === 0) {
+        return {
+          label: period.label,
+          data: [],
+          fill: false,
+          spanGaps: true,
+          hidden: false
+        };
+      }
+
+      const matchDates = periodMatches.map(m => new Date(m.matchDate));
+      const minDate = new Date(Math.min(...matchDates.map(d => d.getTime())));
+      const maxDate = new Date(Math.max(...matchDates.map(d => d.getTime())));
+
+      const periodDates = this.getAllDatesBetween(minDate, maxDate);
+
+      let lastValue: number | null = null;
+      const data = periodDates.map(date => {
+        const dateKey = date.toDateString();
+        const value = statsMap.get(dateKey);
+
+        if (value !== undefined) {
+          lastValue = value;
+          return lastValue;
+        } else {
+          return lastValue;
+        }
+      });
 
       return {
         label: period.label,
         data: data,
+        dates: periodDates,
         fill: false,
-        spanGaps: false,
-        hidden: period.isHidden
+        spanGaps: true,
+        hidden: false
+      };
+    });
+
+    const allDatesSet = new Set<string>();
+    datasets.forEach((dataset: any) => {
+      if (!dataset.hidden && dataset.dates) {
+        dataset.dates.forEach((date: Date) => allDatesSet.add(date.toDateString()));
+      }
+    });
+
+    const allDates = Array.from(allDatesSet)
+      .map(dateStr => new Date(dateStr))
+      .sort((a, b) => a.getTime() - b.getTime());
+
+    const labels = allDates.map(date => {
+      const day = date.getDate();
+      const month = date.toLocaleString('en-US', { month: 'short' });
+      return `${day} ${month}`;
+    });
+
+    const finalDatasets = datasets.map((dataset: any) => {
+      if (dataset.hidden || !dataset.dates) {
+        return {
+          label: dataset.label,
+          data: new Array(allDates.length).fill(null),
+          fill: false,
+          spanGaps: true,
+          hidden: dataset.hidden
+        };
+      }
+
+      const periodDataMap = new Map<string, number | null>();
+      dataset.dates.forEach((date: Date, idx: number) => {
+        periodDataMap.set(date.toDateString(), dataset.data[idx]);
+      });
+
+      const alignedData = allDates.map(date => {
+        return periodDataMap.get(date.toDateString()) ?? null;
+      });
+
+      return {
+        label: dataset.label,
+        data: alignedData,
+        fill: false,
+        spanGaps: true,
+        hidden: false
       };
     });
 
     this.hltvData = {
       labels: labels,
-      datasets: datasets
+      datasets: finalDatasets
     };
   }
 
@@ -260,82 +475,123 @@ export class Evolution implements OnInit {
       isHidden: hidden.has(index)
     }));
 
-    const visiblePeriods = allPeriods.filter(p => !p.isHidden);
-
-    const visibleStats = statsEvolution.filter(stat => {
-      const date = new Date(stat.matchDate);
-      return visiblePeriods.some(period =>
-        date >= period.startDate && date <= period.endDate
-      );
-    });
-
     let cumulativeKills = 0;
     let cumulativeDeaths = 0;
 
-    const statsWithProgressiveKD = visibleStats.map(stat => {
+    const statsMap = new Map<string, number>();
+    statsEvolution.forEach(stat => {
       cumulativeKills += stat.kills;
       cumulativeDeaths += stat.deaths;
-
-      return {
-        ...stat,
-        progressiveKD: cumulativeDeaths > 0 ? cumulativeKills / cumulativeDeaths : 0
-      };
-    });
-
-    const labels = statsWithProgressiveKD.map(stat => {
-      const date = new Date(stat.matchDate);
-      return `${date.getDate()}/${date.getMonth() + 1}`;
+      const progressiveKD = cumulativeDeaths > 0 ? cumulativeKills / cumulativeDeaths : 0;
+      const dateKey = new Date(stat.matchDate).toDateString();
+      statsMap.set(dateKey, progressiveKD);
     });
 
     const datasets = allPeriods.map(period => {
-      let data: (number | null)[];
-
       if (period.isHidden) {
-        data = new Array(statsWithProgressiveKD.length).fill(null);
-      } else {
-        data = statsWithProgressiveKD.map(stat => {
-          const date = new Date(stat.matchDate);
-          if (date >= period.startDate && date <= period.endDate) {
-            return stat.progressiveKD;
-          }
-          return null;
-        });
+        return {
+          label: period.label,
+          data: [],
+          fill: false,
+          spanGaps: true,
+          hidden: true
+        };
       }
+
+      const periodMatches = statsEvolution.filter(stat => {
+        const date = new Date(stat.matchDate);
+        return date >= period.startDate && date <= period.endDate;
+      });
+
+      if (periodMatches.length === 0) {
+        return {
+          label: period.label,
+          data: [],
+          fill: false,
+          spanGaps: true,
+          hidden: false
+        };
+      }
+
+      const matchDates = periodMatches.map(m => new Date(m.matchDate));
+      const minDate = new Date(Math.min(...matchDates.map(d => d.getTime())));
+      const maxDate = new Date(Math.max(...matchDates.map(d => d.getTime())));
+
+      const periodDates = this.getAllDatesBetween(minDate, maxDate);
+
+      let lastValue: number | null = null;
+      const data = periodDates.map(date => {
+        const dateKey = date.toDateString();
+        const value = statsMap.get(dateKey);
+
+        if (value !== undefined) {
+          lastValue = value;
+          return lastValue;
+        } else {
+          return lastValue;
+        }
+      });
 
       return {
         label: period.label,
         data: data,
+        dates: periodDates,
         fill: false,
-        spanGaps: false,
-        hidden: period.isHidden
+        spanGaps: true,
+        hidden: false
+      };
+    });
+
+    const allDatesSet = new Set<string>();
+    datasets.forEach((dataset: any) => {
+      if (!dataset.hidden && dataset.dates) {
+        dataset.dates.forEach((date: Date) => allDatesSet.add(date.toDateString()));
+      }
+    });
+
+    const allDates = Array.from(allDatesSet)
+      .map(dateStr => new Date(dateStr))
+      .sort((a, b) => a.getTime() - b.getTime());
+
+    const labels = allDates.map(date => {
+      const day = date.getDate();
+      const month = date.toLocaleString('en-US', { month: 'short' });
+      return `${day} ${month}`;
+    });
+
+    const finalDatasets = datasets.map((dataset: any) => {
+      if (dataset.hidden || !dataset.dates) {
+        return {
+          label: dataset.label,
+          data: new Array(allDates.length).fill(null),
+          fill: false,
+          spanGaps: true,
+          hidden: dataset.hidden
+        };
+      }
+
+      const periodDataMap = new Map<string, number | null>();
+      dataset.dates.forEach((date: Date, idx: number) => {
+        periodDataMap.set(date.toDateString(), dataset.data[idx]);
+      });
+
+      const alignedData = allDates.map(date => {
+        return periodDataMap.get(date.toDateString()) ?? null;
+      });
+
+      return {
+        label: dataset.label,
+        data: alignedData,
+        fill: false,
+        spanGaps: true,
+        hidden: false
       };
     });
 
     this.kdData = {
       labels: labels,
-      datasets: datasets
+      datasets: finalDatasets
     };
-  }
-
-  private getVisibleStatsForTooltip(): EvolutionResponseDto[] {
-    const seasons = this.seasonsSignal();
-    const statsEvolution = this.statsEvolutionSignal();
-    const hidden = this.hiddenSeasons();
-
-    const visiblePeriods = seasons
-      .map((season, index) => ({
-        startDate: new Date(season.startDate),
-        endDate: new Date(season.endDate),
-        isHidden: hidden.has(index)
-      }))
-      .filter(p => !p.isHidden);
-
-    return statsEvolution.filter(stat => {
-      const date = new Date(stat.matchDate);
-      return visiblePeriods.some(period =>
-        date >= period.startDate && date <= period.endDate
-      );
-    });
   }
 
   //----- Chart Options section
@@ -364,24 +620,6 @@ export class Evolution implements OnInit {
           }
 
           this.hiddenSeasons.set(hidden);
-        }
-      },
-      tooltip: {
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-        titleColor: 'white',
-        bodyColor: 'white',
-        callbacks: {
-          title: (tooltipItems) => {
-            const index = tooltipItems[0].dataIndex;
-            const visibleStats = this.getVisibleStatsForTooltip();
-            if (visibleStats && visibleStats[index]) {
-              const date = new Date(visibleStats[index].matchDate);
-              const day = date.getDate();
-              const month = date.toLocaleString('en-US', { month: 'long' });
-              return `${day} ${month}`;
-            }
-            return tooltipItems[0].label;
-          },
         }
       },
       datalabels: {
