@@ -16,7 +16,6 @@ export class Evolution implements OnInit {
   seasonsSignal = signal<Season[]>([]);
   selectedSeasonSignal = signal<Season | null>(null);
   statsEvolutionSignal = signal<EvolutionResponseDto[]>([]);
-  hiddenSeasons = signal<Set<number>>(new Set());
   @Input() set selectedSeason(value: Season | null) {
     this.selectedSeasonSignal.set(value);
   }
@@ -34,7 +33,6 @@ export class Evolution implements OnInit {
     effect(() => {
       let seasons = this.seasonsSignal();
       const statsEvolution = this.statsEvolutionSignal();
-      const hidden = this.hiddenSeasons();
       const selected = this.selectedSeasonSignal();
       if (selected) seasons = [selected];
 
@@ -70,36 +68,21 @@ export class Evolution implements OnInit {
   }
 
   private prepareRanksData(seasons: Season[], statsEvolution: EvolutionResponseDto[]): void {
-    const hidden = this.hiddenSeasons();
-
     const allPeriods = seasons.map((season, index) => ({
       originalIndex: index,
       startDate: new Date(season.startDate),
       endDate: new Date(season.endDate),
       label: `Season ${season.id}`,
-      isHidden: hidden.has(index)
     }));
 
-    // Create a map of actual stats by date
     const statsMap = new Map<string, EvolutionResponseDto>();
     statsEvolution.forEach(stat => {
       const dateKey = new Date(stat.matchDate).toDateString();
       statsMap.set(dateKey, stat);
     });
 
-    // Build datasets with dates per period
     const datasets = allPeriods.map(period => {
-      if (period.isHidden) {
-        return {
-          label: period.label,
-          data: [],
-          fill: true,
-          spanGaps: true,
-          hidden: true
-        };
-      }
 
-      // Get matches in this period only
       const periodMatches = statsEvolution.filter(stat => {
         const date = new Date(stat.matchDate);
         return date >= period.startDate && date <= period.endDate;
@@ -115,12 +98,10 @@ export class Evolution implements OnInit {
         };
       }
 
-      // Get first and last match date in this period
       const matchDates = periodMatches.map(m => new Date(m.matchDate));
       const minDate = new Date(Math.min(...matchDates.map(d => d.getTime())));
       const maxDate = new Date(Math.max(...matchDates.map(d => d.getTime())));
 
-      // Fill dates between first and last match in THIS period only
       const periodDates = this.getAllDatesBetween(minDate, maxDate);
 
       let lastValue: number | null = null;
@@ -139,14 +120,13 @@ export class Evolution implements OnInit {
       return {
         label: period.label,
         data: data,
-        dates: periodDates, // Store dates for this period
+        dates: periodDates,
         fill: true,
         spanGaps: true,
         hidden: false
       };
     });
 
-    // Get all unique dates across all visible datasets, sorted
     const allDatesSet = new Set<string>();
     datasets.forEach((dataset: any) => {
       if (!dataset.hidden && dataset.dates) {
@@ -158,14 +138,12 @@ export class Evolution implements OnInit {
       .map(dateStr => new Date(dateStr))
       .sort((a, b) => a.getTime() - b.getTime());
 
-    // Generate labels
     const labels = allDates.map(date => {
       const day = date.getDate();
       const month = date.toLocaleString('en-US', { month: 'short' });
       return `${day} ${month}`;
     });
 
-    // Rebuild datasets with aligned data
     const finalDatasets = datasets.map((dataset: any) => {
       if (dataset.hidden || !dataset.dates) {
         return {
@@ -177,13 +155,11 @@ export class Evolution implements OnInit {
         };
       }
 
-      // Create a map of this period's data
       const periodDataMap = new Map<string, number | null>();
       dataset.dates.forEach((date: Date, idx: number) => {
         periodDataMap.set(date.toDateString(), dataset.data[idx]);
       });
 
-      // Align data to global dates
       const alignedData = allDates.map(date => {
         return periodDataMap.get(date.toDateString()) ?? null;
       });
@@ -204,17 +180,13 @@ export class Evolution implements OnInit {
   }
 
   private prepareAdrData(seasons: Season[], statsEvolution: EvolutionResponseDto[]): void {
-    const hidden = this.hiddenSeasons();
-
     const allPeriods = seasons.map((season, index) => ({
       originalIndex: index,
       startDate: new Date(season.startDate),
       endDate: new Date(season.endDate),
       label: `Season ${season.id}`,
-      isHidden: hidden.has(index)
     }));
 
-    // Calculate progressive ADR
     let cumulativeAdr = 0;
     let cumulativeTotal = 0;
 
@@ -228,15 +200,6 @@ export class Evolution implements OnInit {
     });
 
     const datasets = allPeriods.map(period => {
-      if (period.isHidden) {
-        return {
-          label: period.label,
-          data: [],
-          fill: false,
-          spanGaps: true,
-          hidden: true
-        };
-      }
 
       const periodMatches = statsEvolution.filter(stat => {
         const date = new Date(stat.matchDate);
@@ -335,14 +298,11 @@ export class Evolution implements OnInit {
   }
 
   private prepareHltvData(seasons: Season[], statsEvolution: EvolutionResponseDto[]): void {
-    const hidden = this.hiddenSeasons();
-
     const allPeriods = seasons.map((season, index) => ({
       originalIndex: index,
       startDate: new Date(season.startDate),
       endDate: new Date(season.endDate),
       label: `Season ${season.id}`,
-      isHidden: hidden.has(index)
     }));
 
     let cumulativeHltv = 0;
@@ -358,15 +318,6 @@ export class Evolution implements OnInit {
     });
 
     const datasets = allPeriods.map(period => {
-      if (period.isHidden) {
-        return {
-          label: period.label,
-          data: [],
-          fill: false,
-          spanGaps: true,
-          hidden: true
-        };
-      }
 
       const periodMatches = statsEvolution.filter(stat => {
         const date = new Date(stat.matchDate);
@@ -465,14 +416,11 @@ export class Evolution implements OnInit {
   }
 
   private prepareKdData(seasons: Season[], statsEvolution: EvolutionResponseDto[]): void {
-    const hidden = this.hiddenSeasons();
-
     const allPeriods = seasons.map((season, index) => ({
       originalIndex: index,
       startDate: new Date(season.startDate),
       endDate: new Date(season.endDate),
       label: `Season ${season.id}`,
-      isHidden: hidden.has(index)
     }));
 
     let cumulativeKills = 0;
@@ -488,15 +436,6 @@ export class Evolution implements OnInit {
     });
 
     const datasets = allPeriods.map(period => {
-      if (period.isHidden) {
-        return {
-          label: period.label,
-          data: [],
-          fill: false,
-          spanGaps: true,
-          hidden: true
-        };
-      }
 
       const periodMatches = statsEvolution.filter(stat => {
         const date = new Date(stat.matchDate);
@@ -594,7 +533,6 @@ export class Evolution implements OnInit {
     };
   }
 
-  //----- Chart Options section
   baseOptions: ChartOptions<'line'> = {
     responsive: true,
     aspectRatio: 1.75,
@@ -609,18 +547,7 @@ export class Evolution implements OnInit {
             size: 12
           }
         },
-        onClick: (e, legendItem, legend) => {
-          const clickedLabel = legendItem.text;
-          const seasonIndex = parseInt(clickedLabel.split(' ')[1]) - 1;
-          const hidden = new Set(this.hiddenSeasons());
-          if (hidden.has(seasonIndex)) {
-            hidden.delete(seasonIndex);
-          } else {
-            hidden.add(seasonIndex);
-          }
-
-          this.hiddenSeasons.set(hidden);
-        }
+        onClick: () => { return }
       },
       datalabels: {
         display: false

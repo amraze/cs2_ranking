@@ -13,7 +13,7 @@
 }
 
 .section-header {
-    background: rgba(30, 30, 30, 1);
+    background: rgba(0, 0, 0, 0.8);
     color: white;
     border-radius: 0;
 }
@@ -52,8 +52,9 @@
 }
 
 .section-body:nth-child(even) {
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.6);
     color: white;
+    backdrop-filter: blur(10px);
 }
 
 .section-body {
@@ -61,8 +62,9 @@
 }
 
 .section-body:nth-child(odd) {
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.55);
     color: white;
+    backdrop-filter: blur(10px);
 }
 
 .common {
@@ -146,4 +148,46 @@
 
 .hltv-excellent {
     background: #6f42c1;
+}
+
+.progress-bar {
+    width: 0%;
+    animation: fillAnimation 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent);
+        animation: shimmer 2s infinite;
+    }
+}
+
+@keyframes fillAnimation {
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: var(--target-width);
+    }
+}
+
+@keyframes shimmer {
+
+    0%,
+    100% {
+        transform: translateX(-100%);
+    }
+
+    50% {
+        transform: translateX(100%);
+    }
 }
