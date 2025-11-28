@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, tap } from 'rxjs';
-import { Match } from '../shared/models/match.interface';
-import { CacheManager } from '../shared/utils/cache-manager';
-import { Season } from '../shared/models/season.interface';
-import { EvolutionResponseDto } from '../shared/models/evolution-response-dto';
+import { EvolutionResponseDto } from '../models/evolution-response-dto';
+import { CacheManager } from '../../shared/utils/cache-manager';
+import { Match } from '../models/match.interface';
 
 @Injectable({
   providedIn: 'root'

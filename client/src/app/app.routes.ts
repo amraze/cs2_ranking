@@ -1,9 +1,8 @@
 import { Routes } from '@angular/router';
-import { Dashboard } from './components/dashboard/dashboard';
-import { History } from './components/history/history';
-import { Stats } from './components/stats/stats';
-import { Settings } from './components/settings/settings';
-import { Authentication } from './components/authentication/authentication';
+import { Stats } from 'fs';
+import { Authentication } from './features/authentication/authentication';
+import { Dashboard } from './features/dashboard/dashboard';
+import { Settings } from './features/settings/settings';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },

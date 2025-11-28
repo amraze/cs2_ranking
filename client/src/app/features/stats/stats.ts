@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { MapPerformance } from './map-performance/map-performance';
-import { GlobalStats } from './global-stats/global-stats';
-import { Evolution } from './evolution/evolution';
-import { MapService } from '../../services/map.service';
-import { MapPerformanceResponseDto } from '../../shared/models/map-performance-response-dto';
-import { Map } from '../../shared/models/map.interface';
-import { SeasonService } from '../../services/season.service';
-import { Season } from '../../shared/models/season.interface';
+import { MapPerformance } from './components/map-performance/map-performance';
+import { GlobalStats } from './components/global-stats/global-stats';
+import { Evolution } from './components/evolution/evolution';
+import { MapService } from '../../core/services/map.service';
+import { SeasonService } from '../../core/services/season.service';
 import { SharedImports } from '../../shared/shared-imports';
+import { Season } from '../../core/models/season.interface';
+import { Map } from '../../core/models/map.interface';
+import { MapPerformanceResponseDto } from '../../core/models/map-performance-response-dto';
 
 @Component({
   selector: 'app-stats',

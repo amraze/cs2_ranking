@@ -1,9 +1,9 @@
 import { Component, effect, Input, signal } from '@angular/core';
 import { ChartData, ChartOptions } from 'chart.js';
-import { SharedImports } from '../../../shared/shared-imports';
-import { ChartComponent } from '../../../shared/components/chart/chart';
-import { MapPerformanceResponseDto } from '../../../shared/models/map-performance-response-dto';
-import { Map } from '../../../shared/models/map.interface';
+import { SharedImports } from '../../../../shared/shared-imports';
+import { ChartComponent } from '../../../../shared/components/chart/chart';
+import { Map } from '../../../../core/models/map.interface';
+import { MapPerformanceResponseDto } from '../../../../core/models/map-performance-response-dto';
 
 @Component({
   selector: 'app-global-stats',

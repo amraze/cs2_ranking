@@ -1,10 +1,10 @@
 import { Component, effect, Input, OnInit, signal } from '@angular/core';
 import { ChartData, ChartOptions } from 'chart.js';
-import { SharedImports } from '../../../shared/shared-imports';
-import { ChartComponent } from '../../../shared/components/chart/chart';
-import { MatchService } from '../../../services/match.service';
-import { Season } from '../../../shared/models/season.interface';
-import { EvolutionResponseDto } from '../../../shared/models/evolution-response-dto';
+import { SharedImports } from '../../../../shared/shared-imports';
+import { ChartComponent } from '../../../../shared/components/chart/chart';
+import { MatchService } from '../../../../core/services/match.service';
+import { Season } from '../../../../core/models/season.interface';
+import { EvolutionResponseDto } from '../../../../core/models/evolution-response-dto';
 
 @Component({
   selector: 'app-evolution',

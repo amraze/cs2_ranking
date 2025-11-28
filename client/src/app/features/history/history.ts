@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { SharedImports } from '../../shared/shared-imports';
-import { MatchService } from '../../services/match.service';
-import { Match } from '../../shared/models/match.interface';
-import { MapService } from '../../services/map.service';
-import { RankService } from '../../services/rank.service';
-import { Map } from '../../shared/models/map.interface';
-import { Rank } from '../../shared/models/rank.interface';
+import { MatchService } from '../../core/services/match.service';
+import { MapService } from '../../core/services/map.service';
+import { RankService } from '../../core/services/rank.service';
 import { EntityCustomizer } from '../../shared/utils/entity-customizer';
+import { Match } from '../../core/models/match.interface';
+import { Rank } from '../../core/models/rank.interface';
+import { Map } from '../../core/models/map.interface';
 
 @Component({
   selector: 'app-history',

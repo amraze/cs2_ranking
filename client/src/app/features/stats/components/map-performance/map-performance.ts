@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { Map } from '../../../shared/models/map.interface';
-import { SharedImports } from '../../../shared/shared-imports';
-import { MapPerformanceResponseDto } from '../../../shared/models/map-performance-response-dto';
+import { SharedImports } from '../../../../shared/shared-imports';
+import { MapPerformanceResponseDto } from '../../../../core/models/map-performance-response-dto';
+import { Map } from '../../../../core/models/map.interface';
 
 @Component({
   selector: 'app-map-performance',

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SharedImports } from '../../shared/shared-imports.js';
-import { MatchService } from '../../services/match.service.js';
+import { MatchService } from '../../core/services/match.service.js';
 
 @Component({
   selector: 'app-settings',

@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { Match } from "../models/match.interface";
+import { Match } from "../../core/models/match.interface";
 
 @Pipe({ name: 'rankDifference' })
 export class RankDifferencePipe implements PipeTransform {

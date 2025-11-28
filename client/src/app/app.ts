@@ -1,8 +1,8 @@
 import { Component, signal } from '@angular/core';
-import { Sidebar } from "./components/sidebar/sidebar";
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { SharedImports } from './shared/shared-imports';
+import { Sidebar } from './features/sidebar/sidebar';
 
 @Component({
   selector: 'app-root',
