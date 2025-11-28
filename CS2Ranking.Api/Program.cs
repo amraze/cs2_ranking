@@ -4,6 +4,7 @@ using CS2Ranking.Infrastructure.Data.Seeders;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddUserSecrets<Program>();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options
         .UseMySql(
