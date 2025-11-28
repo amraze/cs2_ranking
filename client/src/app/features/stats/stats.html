@@ -1,0 +1,25 @@
+<div class="content">
+    <h3 class="header mb-2 fw-bold">
+        <span>Statistics</span>
+        <span class="px-2">•</span>
+        <select class="px-2" (change)="selectSeason($event)">
+            <option value="0">All Time</option>
+            <option *ngFor="let season of seasons; index as i" [value]="season?.id">Season {{i+1}} </option>
+        </select>
+    </h3>
+    <div class="section-container">
+        <div class="section-content">
+            <div class="row">
+                <div class="col-xl-8">
+                    <app-map-performance [maps]="maps" [mapPerformance]="mapPerformance"></app-map-performance>
+                </div>
+                <div class="col-xl-4">
+                    <app-global-stats [maps]="maps" [mapPerformance]="mapPerformance"></app-global-stats>
+                </div>
+            </div>
+            <div class="row pt-4">
+                <app-evolution [seasons]="seasons" [selectedSeason]="selectedSeason"></app-evolution>
+            </div>
+        </div>
+    </div>
+</div>

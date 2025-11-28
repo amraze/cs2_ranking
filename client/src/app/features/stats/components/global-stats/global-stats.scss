@@ -1,0 +1,285 @@
+.card-header {
+    text-align: center;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 15px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    font-weight: bold;
+    font-size: 24px;
+    letter-spacing: 2px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.global_stats--body {
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 15px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    padding: 0px 30px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    height: 81vh;
+    overflow: auto;
+}
+
+/* Circular Progress Stats */
+.stat-card {
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-card:hover {
+    transform: scale(1.05);
+}
+
+.circular-progress {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+}
+
+.progress-ring-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 8;
+}
+
+.progress-ring {
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s ease;
+}
+
+.stat-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    margin-top: -17px;
+}
+
+.stat-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.6);
+    text-align: center;
+}
+
+.stat-icon {
+    font-size: 16px;
+    opacity: 0.7;
+}
+
+.chart-container {
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+}
+
+/* Rank Section */
+.rank-section {
+    text-align: center;
+    background: linear-gradient(135deg, rgba(233, 69, 96, 0.2), rgba(15, 52, 96, 0.2));
+    border-radius: 15px;
+    padding: 25px 40px;
+    border: 1px solid rgba(233, 69, 96, 0.3);
+}
+
+.rank-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 2px;
+}
+
+.rank-value {
+    font-size: 48px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #4ecca3, #0f9b8e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Performance Cards */
+.perf-card {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 15px;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    height: 100%;
+    padding: 5px;
+}
+
+.perf-card:hover {
+    transform: translateY(-5px);
+}
+
+.kills-card {
+    border-left: 3px solid #4ecca3;
+}
+
+.deaths-card {
+    border-left: 3px solid #e94560;
+}
+
+.assists-card {
+    border-left: 3px solid #6c5ce7;
+}
+
+.perf-icon {
+    font-size: 32px;
+}
+
+.perf-label {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 1px;
+}
+
+.perf-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: white;
+}
+
+.radar-container {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+}
+
+/* Total Games */
+.total-games-section {
+    text-align: center;
+}
+
+.total-games-label {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 1px;
+}
+
+.total-games-value {
+    font-size: 36px;
+    font-weight: 700;
+    color: white;
+}
+
+/* Per Match Cards */
+.per-match-card {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.per-match-label {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 1px;
+}
+
+.per-match-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+}
+
+.per-match-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.per-match-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4ecca3, #0f9b8e);
+    border-radius: 2px;
+    transition: width 0.5s ease;
+}
+
+.per-match-bar-fill.red {
+    background: linear-gradient(90deg, #e94560, #f39c12);
+}
+
+.per-match-bar-fill.blue {
+    background: linear-gradient(90deg, #6c5ce7, #a29bfe);
+}
+
+.global_stats::-webkit-scrollbar {
+    width: 8px;
+}
+
+.global_stats::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.global_stats::-webkit-scrollbar-thumb {
+    background: rgba(233, 69, 96, 0.5);
+    border-radius: 10px;
+}
+
+.global_stats::-webkit-scrollbar-thumb:hover {
+    background: rgba(233, 69, 96, 0.7);
+}
+
+.barOverflow {
+    position: relative;
+    overflow: hidden;
+    width: 75px;
+    height: 38px;
+}
+
+.bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    box-sizing: border-box;
+    border: 8px solid #d5d5d5;
+    border-bottom-color: #0f9b8e;
+    border-right-color: #0f9b8e;
+    transform: rotate(calc(45deg + (var(--percent) * 1.8deg)));
+    transition: transform 0.6s ease;
+}
+
+.bar.blue {
+    border-bottom-color: #6c5ce7;
+    border-right-color: #6c5ce7;
+}
+
+.bar.red {
+    border-bottom-color: #e94560;
+    border-right-color: #e94560;
+}
+
+.bar.orange {
+    border-bottom-color: #f39c12;
+    border-right-color: #f39c12;
+}

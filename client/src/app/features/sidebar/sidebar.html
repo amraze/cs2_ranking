@@ -1,0 +1,27 @@
+<nav class="sidebar" id="sidebar" [class.expanded]="expanded">
+  <button type="button" class="toggle-btn" id="toggle-btn" (click)="toggleExpand()">
+    <i class="fas fa-caret-right"></i>
+  </button>
+  <ul class="menu">
+    <li>
+      <a class="p-2 px-3" (click)="setActiveRoute('dashboard')" [class.active]="isActiveRoute('dashboard')">
+        <i class="fas me-2 fa-dashboard"></i><span>Dashboard</span>
+      </a>
+    </li>
+    <li>
+      <a class="p-2 px-3" (click)="setActiveRoute('history')" [class.active]="isActiveRoute('history')">
+        <i class="fas me-2 fa-history"></i><span>History</span>
+      </a>
+    </li>
+    <li>
+      <a class="p-2 px-3" (click)="setActiveRoute('stats')" [class.active]="isActiveRoute('stats')">
+        <i class="fas me-2 fa-bar-chart"></i><span>Stats</span>
+      </a>
+    </li>
+    <li>
+      <a class="p-2 px-3" (click)="setActiveRoute('settings')" [class.active]="isActiveRoute('settings')">
+        <i class="fas me-2 fa-cog"></i><span>Settings</span>
+      </a>
+    </li>
+  </ul>
+</nav>

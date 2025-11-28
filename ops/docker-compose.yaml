@@ -1,0 +1,39 @@
+version: '3.9'
+
+services:
+  main-api:
+    build:
+      context: ../Main
+      dockerfile: Dockerfile
+    container_name: cs2ranking-main
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: "server=${DB_SERVER};port=${DB_PORT};database=${DB_NAME};user=${DB_USER};charset=utf8mb4"
+      GoogleSheets__ApiKey: ${GOOGLESHEETS_APIKEY}
+      ScopeGG__ScopeSessionId: ${SCOPE_SESSION_ID}
+    ports:
+      - "${MAIN_API_PORT}:8080"
+
+  auth-service:
+    build:
+      context: ../Microservices/CS2Ranking.Authentication
+      dockerfile: Dockerfile
+    container_name: cs2ranking-auth
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: "server=${DB_SERVER};port=${DB_PORT};database=${DB_NAME};user=${DB_USER};charset=utf8mb4"
+    ports:
+      - "${AUTH_SERVICE_PORT}:8080"
+
+  client:
+    build:
+      context: ../client
+      dockerfile: Dockerfile
+    container_name: cs2ranking-client
+    ports:
+      - "${CLIENT_PORT}:80"
+    depends_on:
+      - main-api
+      - auth-service
