@@ -7,9 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options
-        .UseMySql(
-            builder.Configuration.GetConnectionString("DefaultConnection"),
-            new MySqlServerVersion(new Version(8, 0, 33))
+        .UseNpgsql(
+            builder.Configuration.GetConnectionString("DefaultConnection")
         )
         .UseSnakeCaseNamingConvention()
 );

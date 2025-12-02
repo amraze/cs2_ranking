@@ -14,7 +14,7 @@ namespace CS2Ranking.Domain.Factories
         )
         {
             var startDate = start_date ?? _faker.Date.Past(2);
-            var endDate = end_date ?? _faker.Date.Between(startDate, DateTime.UtcNow.AddYears(1));
+            var endDate = end_date;
 
             return new Season
             {

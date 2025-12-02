@@ -12,9 +12,21 @@ namespace CS2Ranking.Infrastructure.Data.Seeders
         {
             var seasons = new List<Season>
             {
-                _seasonFactory.Create( name: "Season 1", start_date: new DateTime(2023, 9, 1), end_date: new DateTime(2025, 1, 31)),
-                _seasonFactory.Create( name: "Season 2", start_date: new DateTime(2025, 1, 29), end_date: new DateTime(2025, 7, 14)),
-                _seasonFactory.Create( name: "Season 3", start_date: new DateTime(2025, 7, 15), end_date: null )
+                _seasonFactory.Create(
+                    name: "Season 1",
+                    start_date: new DateTime(2023, 9, 1, 0, 0, 0, DateTimeKind.Utc),
+                    end_date: new DateTime(2025, 1, 31, 0, 0, 0, DateTimeKind.Utc)
+                ),
+                _seasonFactory.Create(
+                    name: "Season 2",
+                    start_date: new DateTime(2025, 1, 29, 0, 0, 0, DateTimeKind.Utc),
+                    end_date: new DateTime(2025, 7, 14, 0, 0, 0, DateTimeKind.Utc)
+                ),
+                _seasonFactory.Create(
+                    name: "Season 3",
+                    start_date: new DateTime(2025, 7, 15, 0, 0, 0, DateTimeKind.Utc),
+                    end_date: null
+                )
             };
 
             _context.Season.AddRange(seasons);
