@@ -1,5 +1,6 @@
-using CS2Ranking.Domain.Factories;
 using CS2Ranking.Domain.Entities;
+using CS2Ranking.Domain.Factories;
+using Microsoft.EntityFrameworkCore;
 
 namespace CS2Ranking.Infrastructure.Data.Seeders
 {
@@ -10,6 +11,7 @@ namespace CS2Ranking.Infrastructure.Data.Seeders
 
         public void Seed()
         {
+            _context.Rank.ExecuteDelete();
             var ranks = new List<Rank>
             {
                 _rankFactory.Create(name: "Common", ratingMin : 0, picturePath: "https://static.csstats.gg/images/ranks/cs2/rating.common.png"),

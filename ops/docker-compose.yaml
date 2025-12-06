@@ -1,6 +1,23 @@
 version: '3.9'
 
 services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: cs2ranking-postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   main-api:
     build:
       context: ../Main
@@ -9,11 +26,14 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__DefaultConnection: "server=${DB_SERVER};port=${DB_PORT};database=${DB_NAME};user=${DB_USER};charset=utf8mb4"
+      ConnectionStrings__DefaultConnection: "Host=${DB_SERVER};Port=${DB_PORT};Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}"
       GoogleSheets__ApiKey: ${GOOGLESHEETS_APIKEY}
       ScopeGG__ScopeSessionId: ${SCOPE_SESSION_ID}
     ports:
       - "${MAIN_API_PORT}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   auth-service:
     build:
@@ -23,9 +43,12 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__DefaultConnection: "server=${DB_SERVER};port=${DB_PORT};database=${DB_NAME};user=${DB_USER};charset=utf8mb4"
+      ConnectionStrings__DefaultConnection: "Host=${DB_SERVER};Port=${DB_PORT};Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}"
     ports:
       - "${AUTH_SERVICE_PORT}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   client:
     build:
@@ -37,3 +60,6 @@ services:
     depends_on:
       - main-api
       - auth-service
+
+volumes:
+  postgres_data:

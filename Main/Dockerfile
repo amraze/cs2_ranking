@@ -18,11 +18,23 @@ COPY . .
 RUN dotnet publish CS2Ranking.Api/CS2Ranking.Api.csproj -c Release -o /app/publish
 
 # Stage 2: Runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
-WORKDIR /app
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS runtime
+WORKDIR /src
 
-# Copy the published app from build stage
+# Install EF Core tools
+RUN dotnet tool install --global dotnet-ef --version 9.0.0
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+# Copy source files (needed for EF migrations)
+COPY --from=build /src ./
+
+# Copy published app
+WORKDIR /app
 COPY --from=build /app/publish .
+
+# Copy entrypoint script
+COPY entrypoint.sh .
+RUN chmod +x entrypoint.sh
 
 # Set environment variables
 ENV ASPNETCORE_ENVIRONMENT=Development
@@ -32,4 +44,4 @@ ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
 # Set the entry point
-ENTRYPOINT ["dotnet", "CS2Ranking.Api.dll"]
+ENTRYPOINT ["./entrypoint.sh"]

@@ -1,5 +1,6 @@
-using CS2Ranking.Domain.Factories;
 using CS2Ranking.Domain.Entities;
+using CS2Ranking.Domain.Factories;
+using Microsoft.EntityFrameworkCore;
 
 namespace CS2Ranking.Infrastructure.Data.Seeders
 {
@@ -10,6 +11,8 @@ namespace CS2Ranking.Infrastructure.Data.Seeders
 
         public void Seed()
         {
+            _context.Season.ExecuteDelete();
+
             var seasons = new List<Season>
             {
                 _seasonFactory.Create(

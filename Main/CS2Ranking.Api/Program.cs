@@ -38,7 +38,6 @@ if (args.Contains("--seed"))
     using var scope = app.Services.CreateScope();
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     Seeder.Run(context);
-    return;
 }
 
 app.UseAuthorization();
