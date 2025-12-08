@@ -12,23 +12,23 @@ namespace CS2Ranking.Authentication.Services;
 
 public interface ITokenService
 {
-    string GenerateAccessToken(User user);
+    string GenerateAccessToken(AppUser user);
     string GenerateRefreshToken();
     ClaimsPrincipal? GetPrincipalFromExpiredToken(string token);
-    Task<TokenDto> GenerateTokensAsync(User user);
+    Task<TokenDto> GenerateTokensAsync(AppUser user);
 }
 
 public class TokenService : ITokenService
 {
     private readonly JwtSettings _jwtSettings;
-    private readonly UserManager<User> _userManager;
+    private readonly UserManager<AppUser> _userManager;
 
     public TokenService(IConfiguration configuration)
     {
         _jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>()?? throw new ArgumentNullException(nameof(JwtSettings));
     }
 
-    public string GenerateAccessToken(User user)
+    public string GenerateAccessToken(AppUser user)
     {
         var claims = new List<Claim>
         {
@@ -92,15 +92,13 @@ public class TokenService : ITokenService
         return principal;
     }
 
-    public async Task<TokenDto> GenerateTokensAsync(User user)
+    public async Task<TokenDto> GenerateTokensAsync(AppUser user)
     {
         var accessToken = GenerateAccessToken(user);
         var refreshToken = GenerateRefreshToken();
 
         user.RefreshToken = refreshToken;
         user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays);
-
-        await _userManager.UpdateAsync(user);
 
         return new TokenDto
         {

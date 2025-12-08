@@ -15,12 +15,12 @@ public interface IAuthService
 
 public class AuthService : IAuthService
 {
-    private readonly UserManager<User> _userManager;
+    private readonly UserManager<AppUser> _userManager;
     private readonly ITokenService _tokenService;
     private readonly JwtSettings _jwtSettings;
 
     public AuthService(
-        UserManager<User> userManager,
+        UserManager<AppUser> userManager,
         ITokenService tokenService,
         IConfiguration configuration)
     {
@@ -34,7 +34,7 @@ public class AuthService : IAuthService
         var existingUser = await _userManager.FindByEmailAsync(dto.Email);
         if (existingUser != null) return new AuthResponseDto { Success = false, Message = "User already exists", Token = null };
 
-        var user = new User
+        var user = new AppUser
         {
             Email = dto.Email,
             UserName = dto.Email,
@@ -46,6 +46,8 @@ public class AuthService : IAuthService
         if (!result.Succeeded) return new AuthResponseDto { Success = false, Message = string.Join(", ", result.Errors.Select(e => e.Description)), Token = null };
 
         var token = await _tokenService.GenerateTokensAsync(user);
+        await _userManager.UpdateAsync(user);
+
         return new AuthResponseDto { Success = true, Message = "Registration successful", Token = token };
     }
 
@@ -58,6 +60,8 @@ public class AuthService : IAuthService
         if (!isPasswordValid) return new AuthResponseDto { Success = false, Message = "Invalid email or password", Token = null };
 
         var token = await _tokenService.GenerateTokensAsync(user);
+        await _userManager.UpdateAsync(user);
+
         return new AuthResponseDto { Success = true, Message = "Login successful", Token = token };
     }
 
@@ -67,6 +71,7 @@ public class AuthService : IAuthService
 
         if (user == null || user.RefreshTokenExpiry <= DateTime.UtcNow) return new AuthResponseDto { Success = false, Message = "Expired refresh token", Token = null };
         var token = await _tokenService.GenerateTokensAsync(user);
+        await _userManager.UpdateAsync(user);
 
         return new AuthResponseDto { Success = true, Message = "Token refreshed", Token = token };
     }
