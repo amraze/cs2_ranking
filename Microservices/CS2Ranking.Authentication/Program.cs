@@ -31,6 +31,19 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
+// Cors
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DevCorsPolicy", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 // JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
 var key = Encoding.UTF8.GetBytes(jwtSettings!.Secret);
@@ -66,6 +79,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+app.UseCors("DevCorsPolicy");
 
 if (app.Environment.IsDevelopment())
 {

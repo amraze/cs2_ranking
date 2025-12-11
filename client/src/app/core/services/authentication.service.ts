@@ -42,6 +42,8 @@ export class AuthenticationService {
 
 
   private handleResponse(response: AuthResponse): void {
-    this.tokenService.setTokens(response.token.accessToken, response.token.refreshToken, response.token.expiration);
+    if (response.success) {
+      this.tokenService.setTokens(response.token.accessToken, response.token.refreshToken, response.token.expiration);
+    }
   }
 }

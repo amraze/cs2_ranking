@@ -19,27 +19,21 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
         var response = await _authService.RegisterAsync(dto);
-        if (!response.Success) return BadRequest(response.Message);
-
-        return Ok(new { response.Message, response.Token });
+        return Ok(response);
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
         var response = await _authService.LoginAsync(dto);
-        if (!response.Success) return Unauthorized(response.Message);
-
-        return Ok(new { response.Message, response.Token });
+        return Ok(response);
     }
 
     [HttpPost("refresh")]
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDto dto)
     {
         var response = await _authService.RefreshToken(dto.RefreshToken);
-        if (!response.Success) return Unauthorized(response.Message);
-
-        return Ok(new { response.Message, response.Token });
+        return Ok(response);
     }
 
     [Authorize]

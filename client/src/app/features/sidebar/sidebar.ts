@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthenticationService } from '../../core/services/authentication.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -8,7 +9,7 @@ import { Router } from '@angular/router';
 })
 export class Sidebar {
   protected expanded: boolean = false;
-  constructor(private router: Router) { }
+  constructor(private router: Router, private authenticationService: AuthenticationService) { }
 
   protected toggleExpand(): void {
     this.expanded = !this.expanded;
@@ -20,5 +21,10 @@ export class Sidebar {
 
   protected setActiveRoute(route: string): void {
     this.router.navigateByUrl(route);
+  }
+
+  protected logout(): void {
+    this.authenticationService.logout();
+    this.router.navigate(["login"]);
   }
 }

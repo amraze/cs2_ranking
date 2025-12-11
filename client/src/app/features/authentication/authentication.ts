@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SharedImports } from '../../shared/shared-imports';
+import { AuthenticationService } from '../../core/services/authentication.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-authentication',
@@ -12,8 +14,10 @@ export class Authentication implements OnInit {
   authForm!: FormGroup;
   isLogin: boolean = true;
   submitted: boolean = false;
+  errorMessage: string = "";
+  hasError: boolean = false;
 
-  constructor(private formBuilder: FormBuilder) { }
+  constructor(private formBuilder: FormBuilder, private authService: AuthenticationService, private router: Router) { }
 
   ngOnInit(): void {
     this.initForm();
@@ -27,7 +31,8 @@ export class Authentication implements OnInit {
       });
     } else {
       this.authForm = this.formBuilder.group({
-        username: ['', [Validators.required, Validators.minLength(3)]],
+        firstName: ['', [Validators.required, Validators.minLength(3)]],
+        lastName: ['', [Validators.required, Validators.minLength(3)]],
         email: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, Validators.minLength(6)]],
         confirmPassword: ['', [Validators.required]]
@@ -69,29 +74,17 @@ export class Authentication implements OnInit {
   }
 
   login(): void {
-    const { email, password } = this.authForm.value;
-    console.log('Login:', { email, password });
-    // Implement your login logic here
-    // this.authService.login(email, password).subscribe(...)
+    this.authService.login(this.authForm.value).subscribe(response => {
+      if (!response.success) { this.errorMessage = response.message; this.hasError = false; this.hasError = true; }
+      else { this.errorMessage = ""; this.router.navigate(['']) }
+    });
   }
 
   signup(): void {
-    const { username, email, password } = this.authForm.value;
-    console.log('Signup:', { username, email, password });
-    // Implement your signup logic here
-    // this.authService.signup(username, email, password).subscribe(...)
-  }
-
-  socialLogin(platform: string): void {
-    console.log(`${platform} login`);
-    // Implement social login logic
-    // this.authService.socialLogin(platform).subscribe(...)
-  }
-
-  forgotPassword(): void {
-    console.log('Forgot password');
-    // Implement forgot password logic
-    // Navigate to forgot password page or show modal
+    this.authService.register(this.authForm.value).subscribe(response => {
+      if (!response.success) { this.errorMessage = response.message; this.hasError = true; }
+      else { this.errorMessage = ""; this.hasError = false; alert("Registered succesfully !") }
+    });
   }
 
   get f() {

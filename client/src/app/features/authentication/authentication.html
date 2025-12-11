@@ -16,16 +16,38 @@
             </div>
 
             <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
+                <div class="badge bg-danger bg-opacity-10 text-danger mb-3"
+                    *ngIf="!isLogin && submitted && hasError && authForm.valid">
+                    <span>{{errorMessage}}</span>
+                </div>
                 <div class="form-group" *ngIf="!isLogin">
-                    <label class="form-label">Username</label>
-                    <input type="text" class="form-input" formControlName="username" placeholder="Choose a username"
-                        [class.invalid]="submitted && f['username'].errors">
-                    <div class="error-message" *ngIf="submitted && f['username'].errors">
-                        <span *ngIf="f['username'].errors['required']">Username is required</span>
-                        <span *ngIf="f['username'].errors['minlength']">Username must be at least 3 characters</span>
+                    <div class="row">
+                        <div class="col-6">
+                            <label class="form-label">First name</label>
+                            <input type="text" class="form-input" formControlName="firstName" placeholder="First Name"
+                                [class.invalid]="submitted && f['firstName'].errors">
+                            <div class="error-message" *ngIf="submitted && f['firstName'].errors">
+                                <span *ngIf="f['firstName'].errors['required']">First Name is required</span>
+                                <span *ngIf="f['firstName'].errors['minlength']">First Name must be at least 3
+                                    characters</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Last name</label>
+                            <input type="text" class="form-input" formControlName="lastName" placeholder="Last Name"
+                                [class.invalid]="submitted && f['lastName'].errors">
+                            <div class="error-message" *ngIf="submitted && f['lastName'].errors">
+                                <span *ngIf="f['lastName'].errors['required']">Last Name is required</span>
+                                <span *ngIf="f['lastName'].errors['minlength']">Last Name must be at least 3
+                                    characters</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
+                <div class="badge bg-danger bg-opacity-10 text-danger mb-3" *ngIf="isLogin && hasError">
+                    <span>{{errorMessage}}</span>
+                </div>
                 <div class="form-group">
                     <label class="form-label">Email</label>
                     <input type="email" class="form-input" formControlName="email" placeholder="Enter your email"
@@ -54,10 +76,6 @@
                         <span *ngIf="f['confirmPassword'].errors['required']">Please confirm your password</span>
                         <span *ngIf="f['confirmPassword'].errors['passwordMismatch']">Passwords do not match</span>
                     </div>
-                </div>
-
-                <div class="forgot-password" *ngIf="isLogin">
-                    <a href="javascript:void(0)" (click)="forgotPassword()">Forgot Password?</a>
                 </div>
 
                 <button type="submit" class="submit-btn">
