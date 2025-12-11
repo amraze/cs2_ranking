@@ -71,7 +71,7 @@ export class Evolution implements OnInit {
     const allPeriods = seasons.map((season, index) => ({
       originalIndex: index,
       startDate: new Date(season.startDate),
-      endDate: new Date(season.endDate),
+      endDate: season.endDate != null ? new Date(season.endDate) : new Date(),
       label: `Season ${season.id}`,
     }));
 
@@ -183,7 +183,7 @@ export class Evolution implements OnInit {
     const allPeriods = seasons.map((season, index) => ({
       originalIndex: index,
       startDate: new Date(season.startDate),
-      endDate: new Date(season.endDate),
+      endDate: season.endDate != null ? new Date(season.endDate) : new Date(),
       label: `Season ${season.id}`,
     }));
 
@@ -301,7 +301,7 @@ export class Evolution implements OnInit {
     const allPeriods = seasons.map((season, index) => ({
       originalIndex: index,
       startDate: new Date(season.startDate),
-      endDate: new Date(season.endDate),
+      endDate: season.endDate != null ? new Date(season.endDate) : new Date(),
       label: `Season ${season.id}`,
     }));
 
@@ -419,7 +419,7 @@ export class Evolution implements OnInit {
     const allPeriods = seasons.map((season, index) => ({
       originalIndex: index,
       startDate: new Date(season.startDate),
-      endDate: new Date(season.endDate),
+      endDate: season.endDate != null ? new Date(season.endDate) : new Date(),
       label: `Season ${season.id}`,
     }));
 
