@@ -423,6 +423,7 @@ export class Evolution implements OnInit {
       label: `Season ${season.id}`,
     }));
 
+
     let cumulativeKills = 0;
     let cumulativeDeaths = 0;
 
