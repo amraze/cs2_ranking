@@ -3,12 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of, tap } from 'rxjs';
 import { CacheManager } from '../../shared/utils/cache-manager';
 import { Rank } from '../models/rank.interface';
+import { environment } from '../../../environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RankService {
-  private url = 'http://localhost:5130/api/ranks';
+  private url = `${environment.apiMainUrl}/ranks`;
   private cacheManager = new CacheManager<Rank[]>();
 
   constructor(private http: HttpClient) { }

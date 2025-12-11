@@ -5,12 +5,13 @@ import { CacheManager } from '../../shared/utils/cache-manager';
 import { MapPerformanceResponseDto } from '../models/map-performance-response-dto';
 import { Season } from '../models/season.interface';
 import { Map } from '../models/map.interface';
+import { environment } from '../../../environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MapService {
-  private url = 'http://localhost:5130/api/maps';
+  private url = `${environment.apiMainUrl}/maps`;
   private mapCache = new CacheManager<Map[]>();
   private mapPerformanceCache = new CacheManager<MapPerformanceResponseDto[]>();
 

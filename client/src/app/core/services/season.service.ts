@@ -3,12 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of, tap } from 'rxjs';
 import { CacheManager } from '../../shared/utils/cache-manager';
 import { Season } from '../models/season.interface';
+import { environment } from '../../../environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SeasonService {
-  private url = 'http://localhost:5130/api/seasons';
+  private url = `${environment.apiMainUrl}/seasons`;
   private cacheManager = new CacheManager<Season[]>();
 
   constructor(private http: HttpClient) { }

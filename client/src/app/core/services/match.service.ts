@@ -4,12 +4,13 @@ import { Observable, of, tap } from 'rxjs';
 import { EvolutionResponseDto } from '../models/evolution-response-dto';
 import { CacheManager } from '../../shared/utils/cache-manager';
 import { Match } from '../models/match.interface';
+import { environment } from '../../../environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MatchService {
-  private url = 'http://localhost:5130/api/matches';
+  private url = `${environment.apiMainUrl}/matches`;
   private cacheManager = new CacheManager<Match[][]>();
   private statsCacheManager = new CacheManager<EvolutionResponseDto[]>();
 
