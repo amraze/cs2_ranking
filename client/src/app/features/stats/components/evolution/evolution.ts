@@ -15,6 +15,7 @@ interface MetricConfig {
   fill: boolean;
   cumulative: boolean;
   calculator: (stat: EvolutionResponseDto) => number;
+  cumulativeCalculator?: (stats: EvolutionResponseDto[]) => number;
 }
 
 @Component({
@@ -27,14 +28,6 @@ export class Evolution implements OnInit {
   seasonsSignal = signal<Season[]>([]);
   selectedSeasonSignal = signal<Season | null>(null);
   statsEvolutionSignal = signal<EvolutionResponseDto[]>([]);
-  rankMin = 1000;
-  rankMax = 5000;
-  adrMin = 40;
-  adrMax = 120;
-  hltvMin = 0.4;
-  hltvMax = 1.4;
-  kdMin = 0.4;
-  kdMax = 1.4;
 
   @Input() set selectedSeason(value: Season | null) {
     this.selectedSeasonSignal.set(value);
@@ -54,33 +47,30 @@ export class Evolution implements OnInit {
       title: 'Rank Evolution',
       fill: true,
       cumulative: true,
-      min: this.rankMin,
-      max: this.rankMax,
       calculator: (stat) => stat.rank
     },
     adr: {
       title: 'ADR Evolution',
       fill: false,
       cumulative: false,
-      min: this.adrMin,
-      max: this.adrMax,
       calculator: (stat) => stat.total > 0 ? stat.adr / stat.total : 0
     },
     hltv: {
       title: 'HLTV Evolution',
       fill: false,
       cumulative: false,
-      min: this.hltvMin,
-      max: this.hltvMax,
       calculator: (stat) => stat.total > 0 ? stat.hltv / stat.total : 0
     },
     kd: {
-      title: 'K/D Evolution',
-      fill: false,
-      cumulative: false,
-      min: this.kdMin,
-      max: this.kdMax,
-      calculator: (stat) => stat.deaths > 0 ? stat.kills / stat.deaths : 0
+      title: 'K - D Evolution',
+      fill: true,
+      cumulative: true,
+      calculator: (stat) => stat.kills - stat.deaths,
+      cumulativeCalculator: (stats) => {
+        const totalKills = stats.reduce((sum, stat) => sum + stat.kills, 0);
+        const totalDeaths = stats.reduce((sum, stat) => sum + stat.deaths, 0);
+        return totalKills - totalDeaths;
+      }
     }
   };
 
@@ -132,19 +122,35 @@ export class Evolution implements OnInit {
         const maxDate = new Date(Math.max(...matchDates.map(d => d.getTime())));
         const allDates = this.getDateRange(minDate, maxDate);
 
-        const statsMap = new Map<string, number>();
-        periodMatches.forEach(stat => {
-          statsMap.set(new Date(stat.matchDate).toDateString(), config.calculator(stat));
-        });
+        if (config.cumulativeCalculator) {
+          const cumulativeCalculator = config.cumulativeCalculator;
+          const data = allDates.map(date => {
+            const matchesUpToDate = periodMatches.filter(stat => {
+              const matchDate = new Date(stat.matchDate);
+              return matchDate <= date;
+            });
 
-        let lastValue: number | null = null;
-        const data = allDates.map(date => {
-          const value = statsMap.get(date.toDateString());
-          if (value !== undefined) lastValue = value;
-          return lastValue;
-        });
+            if (matchesUpToDate.length === 0) return null;
+            return cumulativeCalculator(matchesUpToDate);
+          });
 
-        return { label: period.label, data, dates: allDates, fill: config.fill };
+          return { label: period.label, data, dates: allDates, fill: config.fill };
+        } else {
+          // Original cumulative logic for rank
+          const statsMap = new Map<string, number>();
+          periodMatches.forEach(stat => {
+            statsMap.set(new Date(stat.matchDate).toDateString(), config.calculator(stat));
+          });
+
+          let lastValue: number | null = null;
+          const data = allDates.map(date => {
+            const value = statsMap.get(date.toDateString());
+            if (value !== undefined) lastValue = value;
+            return lastValue;
+          });
+
+          return { label: period.label, data, dates: allDates, fill: config.fill };
+        }
       } else {
         const dates = periodMatches.map(m => new Date(m.matchDate));
         const data = periodMatches.map(stat => config.calculator(stat));
@@ -205,6 +211,7 @@ export class Evolution implements OnInit {
 
   private createChartOptions(metric: ChartMetric): ChartOptions<'line'> {
     const config = this.metricConfigs[metric];
+
     return {
       responsive: true,
       aspectRatio: 1.75,
@@ -233,7 +240,10 @@ export class Evolution implements OnInit {
       },
       scales: {
         y: {
-          ticks: { color: 'white' },
+          ticks: {
+            color: 'white',
+            count: 5
+          },
           grid: { color: 'rgba(255, 255, 255, 0.2)' },
           ...(config.min !== undefined && { min: config.min }),
           ...(config.max !== undefined && { max: config.max })
