@@ -6,6 +6,17 @@ import { MatchService } from '../../../../core/services/match.service';
 import { Season } from '../../../../core/models/season.interface';
 import { EvolutionResponseDto } from '../../../../core/models/evolution-response-dto';
 
+type ChartMetric = 'rank' | 'adr' | 'hltv' | 'kd';
+
+interface MetricConfig {
+  title: string;
+  min?: number;
+  max?: number;
+  fill: boolean;
+  cumulative: boolean;
+  calculator: (stat: EvolutionResponseDto) => number;
+}
+
 @Component({
   selector: 'app-evolution',
   imports: [SharedImports, ChartComponent],
@@ -16,6 +27,15 @@ export class Evolution implements OnInit {
   seasonsSignal = signal<Season[]>([]);
   selectedSeasonSignal = signal<Season | null>(null);
   statsEvolutionSignal = signal<EvolutionResponseDto[]>([]);
+  rankMin = 1000;
+  rankMax = 5000;
+  adrMin = 40;
+  adrMax = 120;
+  hltvMin = 0.4;
+  hltvMax = 1.4;
+  kdMin = 0.4;
+  kdMax = 1.4;
+
   @Input() set selectedSeason(value: Season | null) {
     this.selectedSeasonSignal.set(value);
   }
@@ -29,642 +49,202 @@ export class Evolution implements OnInit {
   hltvData: ChartData<'line', (number | null)[]> = { labels: [], datasets: [] };
   kdData: ChartData<'line', (number | null)[]> = { labels: [], datasets: [] };
 
+  private metricConfigs: Record<ChartMetric, MetricConfig> = {
+    rank: {
+      title: 'Rank Evolution',
+      fill: true,
+      cumulative: true,
+      min: this.rankMin,
+      max: this.rankMax,
+      calculator: (stat) => stat.rank
+    },
+    adr: {
+      title: 'ADR Evolution',
+      fill: false,
+      cumulative: false,
+      min: this.adrMin,
+      max: this.adrMax,
+      calculator: (stat) => stat.total > 0 ? stat.adr / stat.total : 0
+    },
+    hltv: {
+      title: 'HLTV Evolution',
+      fill: false,
+      cumulative: false,
+      min: this.hltvMin,
+      max: this.hltvMax,
+      calculator: (stat) => stat.total > 0 ? stat.hltv / stat.total : 0
+    },
+    kd: {
+      title: 'K/D Evolution',
+      fill: false,
+      cumulative: false,
+      min: this.kdMin,
+      max: this.kdMax,
+      calculator: (stat) => stat.deaths > 0 ? stat.kills / stat.deaths : 0
+    }
+  };
+
   constructor(private _matchService: MatchService) {
     effect(() => {
       let seasons = this.seasonsSignal();
       const statsEvolution = this.statsEvolutionSignal();
       const selected = this.selectedSeasonSignal();
+
       if (selected) seasons = [selected];
 
       if (seasons.length > 0 && statsEvolution.length > 0) {
-        this.prepareRanksData(seasons, statsEvolution);
-        this.prepareAdrData(seasons, statsEvolution);
-        this.prepareKdData(seasons, statsEvolution);
-        this.prepareHltvData(seasons, statsEvolution);
+        this.ranksData = this.prepareChartData('rank', seasons, statsEvolution);
+        this.adrData = this.prepareChartData('adr', seasons, statsEvolution);
+        this.kdData = this.prepareChartData('kd', seasons, statsEvolution);
+        this.hltvData = this.prepareChartData('hltv', seasons, statsEvolution);
       }
     });
   }
 
   ngOnInit(): void {
-    this.getStatsEvolution();
-  }
-
-  getStatsEvolution(): void {
     this._matchService.getStatsEvolution().subscribe(response => {
       this.statsEvolutionSignal.set(response);
-    })
+    });
   }
 
-  private getAllDatesBetween(startDate: Date, endDate: Date): Date[] {
-    const dates: Date[] = [];
-    const current = new Date(startDate);
+  private prepareChartData(metric: ChartMetric, seasons: Season[], statsEvolution: EvolutionResponseDto[]): ChartData<'line', (number | null)[]> {
+    const config = this.metricConfigs[metric];
 
-    while (current <= endDate) {
+    const periods = seasons.map(season => ({
+      startDate: new Date(season.startDate),
+      endDate: season.endDate ? new Date(season.endDate) : new Date(),
+      label: `Season ${season.id}`,
+    }));
+
+    const datasets = periods.map(period => {
+      const periodMatches = statsEvolution.filter(stat => {
+        const date = new Date(stat.matchDate);
+        return date >= period.startDate && date <= period.endDate;
+      });
+
+      if (periodMatches.length === 0) {
+        return { label: period.label, data: [], dates: [], fill: config.fill };
+      }
+
+      if (config.cumulative) {
+        const matchDates = periodMatches.map(m => new Date(m.matchDate));
+        const minDate = new Date(Math.min(...matchDates.map(d => d.getTime())));
+        const maxDate = new Date(Math.max(...matchDates.map(d => d.getTime())));
+        const allDates = this.getDateRange(minDate, maxDate);
+
+        const statsMap = new Map<string, number>();
+        periodMatches.forEach(stat => {
+          statsMap.set(new Date(stat.matchDate).toDateString(), config.calculator(stat));
+        });
+
+        let lastValue: number | null = null;
+        const data = allDates.map(date => {
+          const value = statsMap.get(date.toDateString());
+          if (value !== undefined) lastValue = value;
+          return lastValue;
+        });
+
+        return { label: period.label, data, dates: allDates, fill: config.fill };
+      } else {
+        const dates = periodMatches.map(m => new Date(m.matchDate));
+        const data = periodMatches.map(stat => config.calculator(stat));
+
+        return { label: period.label, data, dates, fill: config.fill };
+      }
+    });
+
+    const allDates = this.getAllUniqueDates(datasets);
+    const labels = allDates.map(date =>
+      `${date.getDate()} ${date.toLocaleString('en-US', { month: 'short' })}`
+    );
+
+    const finalDatasets = datasets.map(dataset => {
+      if (!dataset.dates.length) {
+        return {
+          label: dataset.label,
+          data: new Array(allDates.length).fill(null),
+          fill: config.fill,
+          spanGaps: true,
+        };
+      }
+
+      const dataMap = new Map(
+        dataset.dates.map((date, idx) => [date.toDateString(), dataset.data[idx]])
+      );
+
+      return {
+        label: dataset.label,
+        data: allDates.map(date => dataMap.get(date.toDateString()) ?? null),
+        fill: config.fill,
+        spanGaps: true,
+      };
+    });
+
+    return { labels, datasets: finalDatasets };
+  }
+
+  private getDateRange(start: Date, end: Date): Date[] {
+    const dates: Date[] = [];
+    const current = new Date(start);
+    while (current <= end) {
       dates.push(new Date(current));
       current.setDate(current.getDate() + 1);
     }
-
     return dates;
   }
 
-  private prepareRanksData(seasons: Season[], statsEvolution: EvolutionResponseDto[]): void {
-    const allPeriods = seasons.map((season, index) => ({
-      originalIndex: index,
-      startDate: new Date(season.startDate),
-      endDate: season.endDate != null ? new Date(season.endDate) : new Date(),
-      label: `Season ${season.id}`,
-    }));
-
-    const statsMap = new Map<string, EvolutionResponseDto>();
-    statsEvolution.forEach(stat => {
-      const dateKey = new Date(stat.matchDate).toDateString();
-      statsMap.set(dateKey, stat);
+  private getAllUniqueDates(datasets: any[]): Date[] {
+    const dateSet = new Set<string>();
+    datasets.forEach(ds => {
+      ds.dates?.forEach((date: Date) => dateSet.add(date.toDateString()));
     });
-
-    const datasets = allPeriods.map(period => {
-
-      const periodMatches = statsEvolution.filter(stat => {
-        const date = new Date(stat.matchDate);
-        return date >= period.startDate && date <= period.endDate;
-      });
-
-      if (periodMatches.length === 0) {
-        return {
-          label: period.label,
-          data: [],
-          fill: true,
-          spanGaps: true,
-          hidden: false
-        };
-      }
-
-      const matchDates = periodMatches.map(m => new Date(m.matchDate));
-      const minDate = new Date(Math.min(...matchDates.map(d => d.getTime())));
-      const maxDate = new Date(Math.max(...matchDates.map(d => d.getTime())));
-
-      const periodDates = this.getAllDatesBetween(minDate, maxDate);
-
-      let lastValue: number | null = null;
-      const data = periodDates.map(date => {
-        const dateKey = date.toDateString();
-        const stat = statsMap.get(dateKey);
-
-        if (stat) {
-          lastValue = stat.rank;
-          return lastValue;
-        } else {
-          return lastValue;
-        }
-      });
-
-      return {
-        label: period.label,
-        data: data,
-        dates: periodDates,
-        fill: true,
-        spanGaps: true,
-        hidden: false
-      };
-    });
-
-    const allDatesSet = new Set<string>();
-    datasets.forEach((dataset: any) => {
-      if (!dataset.hidden && dataset.dates) {
-        dataset.dates.forEach((date: Date) => allDatesSet.add(date.toDateString()));
-      }
-    });
-
-    const allDates = Array.from(allDatesSet)
-      .map(dateStr => new Date(dateStr))
+    return Array.from(dateSet)
+      .map(str => new Date(str))
       .sort((a, b) => a.getTime() - b.getTime());
-
-    const labels = allDates.map(date => {
-      const day = date.getDate();
-      const month = date.toLocaleString('en-US', { month: 'short' });
-      return `${day} ${month}`;
-    });
-
-    const finalDatasets = datasets.map((dataset: any) => {
-      if (dataset.hidden || !dataset.dates) {
-        return {
-          label: dataset.label,
-          data: new Array(allDates.length).fill(null),
-          fill: true,
-          spanGaps: true,
-          hidden: dataset.hidden
-        };
-      }
-
-      const periodDataMap = new Map<string, number | null>();
-      dataset.dates.forEach((date: Date, idx: number) => {
-        periodDataMap.set(date.toDateString(), dataset.data[idx]);
-      });
-
-      const alignedData = allDates.map(date => {
-        return periodDataMap.get(date.toDateString()) ?? null;
-      });
-
-      return {
-        label: dataset.label,
-        data: alignedData,
-        fill: true,
-        spanGaps: true,
-        hidden: false
-      };
-    });
-
-    this.ranksData = {
-      labels: labels,
-      datasets: finalDatasets
-    };
   }
 
-  private prepareAdrData(seasons: Season[], statsEvolution: EvolutionResponseDto[]): void {
-    const allPeriods = seasons.map((season, index) => ({
-      originalIndex: index,
-      startDate: new Date(season.startDate),
-      endDate: season.endDate != null ? new Date(season.endDate) : new Date(),
-      label: `Season ${season.id}`,
-    }));
-
-    let cumulativeAdr = 0;
-    let cumulativeTotal = 0;
-
-    const statsMap = new Map<string, number>();
-    statsEvolution.forEach(stat => {
-      cumulativeAdr += stat.adr;
-      cumulativeTotal += stat.total;
-      const progressiveAvgAdr = cumulativeTotal > 0 ? cumulativeAdr / cumulativeTotal : 0;
-      const dateKey = new Date(stat.matchDate).toDateString();
-      statsMap.set(dateKey, progressiveAvgAdr);
-    });
-
-    const datasets = allPeriods.map(period => {
-
-      const periodMatches = statsEvolution.filter(stat => {
-        const date = new Date(stat.matchDate);
-        return date >= period.startDate && date <= period.endDate;
-      });
-
-      if (periodMatches.length === 0) {
-        return {
-          label: period.label,
-          data: [],
-          fill: false,
-          spanGaps: true,
-          hidden: false
-        };
-      }
-
-      const matchDates = periodMatches.map(m => new Date(m.matchDate));
-      const minDate = new Date(Math.min(...matchDates.map(d => d.getTime())));
-      const maxDate = new Date(Math.max(...matchDates.map(d => d.getTime())));
-
-      const periodDates = this.getAllDatesBetween(minDate, maxDate);
-
-      let lastValue: number | null = null;
-      const data = periodDates.map(date => {
-        const dateKey = date.toDateString();
-        const value = statsMap.get(dateKey);
-
-        if (value !== undefined) {
-          lastValue = value;
-          return lastValue;
-        } else {
-          return lastValue;
-        }
-      });
-
-      return {
-        label: period.label,
-        data: data,
-        dates: periodDates,
-        fill: false,
-        spanGaps: true,
-        hidden: false
-      };
-    });
-
-    const allDatesSet = new Set<string>();
-    datasets.forEach((dataset: any) => {
-      if (!dataset.hidden && dataset.dates) {
-        dataset.dates.forEach((date: Date) => allDatesSet.add(date.toDateString()));
-      }
-    });
-
-    const allDates = Array.from(allDatesSet)
-      .map(dateStr => new Date(dateStr))
-      .sort((a, b) => a.getTime() - b.getTime());
-
-    const labels = allDates.map(date => {
-      const day = date.getDate();
-      const month = date.toLocaleString('en-US', { month: 'short' });
-      return `${day} ${month}`;
-    });
-
-    const finalDatasets = datasets.map((dataset: any) => {
-      if (dataset.hidden || !dataset.dates) {
-        return {
-          label: dataset.label,
-          data: new Array(allDates.length).fill(null),
-          fill: false,
-          spanGaps: true,
-          hidden: dataset.hidden
-        };
-      }
-
-      const periodDataMap = new Map<string, number | null>();
-      dataset.dates.forEach((date: Date, idx: number) => {
-        periodDataMap.set(date.toDateString(), dataset.data[idx]);
-      });
-
-      const alignedData = allDates.map(date => {
-        return periodDataMap.get(date.toDateString()) ?? null;
-      });
-
-      return {
-        label: dataset.label,
-        data: alignedData,
-        fill: false,
-        spanGaps: true,
-        hidden: false
-      };
-    });
-
-    this.adrData = {
-      labels: labels,
-      datasets: finalDatasets
-    };
-  }
-
-  private prepareHltvData(seasons: Season[], statsEvolution: EvolutionResponseDto[]): void {
-    const allPeriods = seasons.map((season, index) => ({
-      originalIndex: index,
-      startDate: new Date(season.startDate),
-      endDate: season.endDate != null ? new Date(season.endDate) : new Date(),
-      label: `Season ${season.id}`,
-    }));
-
-    let cumulativeHltv = 0;
-    let cumulativeTotal = 0;
-
-    const statsMap = new Map<string, number>();
-    statsEvolution.forEach(stat => {
-      cumulativeHltv += stat.hltv;
-      cumulativeTotal += stat.total;
-      const progressiveAvgHltv = cumulativeTotal > 0 ? cumulativeHltv / cumulativeTotal : 0;
-      const dateKey = new Date(stat.matchDate).toDateString();
-      statsMap.set(dateKey, progressiveAvgHltv);
-    });
-
-    const datasets = allPeriods.map(period => {
-
-      const periodMatches = statsEvolution.filter(stat => {
-        const date = new Date(stat.matchDate);
-        return date >= period.startDate && date <= period.endDate;
-      });
-
-      if (periodMatches.length === 0) {
-        return {
-          label: period.label,
-          data: [],
-          fill: false,
-          spanGaps: true,
-          hidden: false
-        };
-      }
-
-      const matchDates = periodMatches.map(m => new Date(m.matchDate));
-      const minDate = new Date(Math.min(...matchDates.map(d => d.getTime())));
-      const maxDate = new Date(Math.max(...matchDates.map(d => d.getTime())));
-
-      const periodDates = this.getAllDatesBetween(minDate, maxDate);
-
-      let lastValue: number | null = null;
-      const data = periodDates.map(date => {
-        const dateKey = date.toDateString();
-        const value = statsMap.get(dateKey);
-
-        if (value !== undefined) {
-          lastValue = value;
-          return lastValue;
-        } else {
-          return lastValue;
-        }
-      });
-
-      return {
-        label: period.label,
-        data: data,
-        dates: periodDates,
-        fill: false,
-        spanGaps: true,
-        hidden: false
-      };
-    });
-
-    const allDatesSet = new Set<string>();
-    datasets.forEach((dataset: any) => {
-      if (!dataset.hidden && dataset.dates) {
-        dataset.dates.forEach((date: Date) => allDatesSet.add(date.toDateString()));
-      }
-    });
-
-    const allDates = Array.from(allDatesSet)
-      .map(dateStr => new Date(dateStr))
-      .sort((a, b) => a.getTime() - b.getTime());
-
-    const labels = allDates.map(date => {
-      const day = date.getDate();
-      const month = date.toLocaleString('en-US', { month: 'short' });
-      return `${day} ${month}`;
-    });
-
-    const finalDatasets = datasets.map((dataset: any) => {
-      if (dataset.hidden || !dataset.dates) {
-        return {
-          label: dataset.label,
-          data: new Array(allDates.length).fill(null),
-          fill: false,
-          spanGaps: true,
-          hidden: dataset.hidden
-        };
-      }
-
-      const periodDataMap = new Map<string, number | null>();
-      dataset.dates.forEach((date: Date, idx: number) => {
-        periodDataMap.set(date.toDateString(), dataset.data[idx]);
-      });
-
-      const alignedData = allDates.map(date => {
-        return periodDataMap.get(date.toDateString()) ?? null;
-      });
-
-      return {
-        label: dataset.label,
-        data: alignedData,
-        fill: false,
-        spanGaps: true,
-        hidden: false
-      };
-    });
-
-    this.hltvData = {
-      labels: labels,
-      datasets: finalDatasets
-    };
-  }
-
-  private prepareKdData(seasons: Season[], statsEvolution: EvolutionResponseDto[]): void {
-    const allPeriods = seasons.map((season, index) => ({
-      originalIndex: index,
-      startDate: new Date(season.startDate),
-      endDate: season.endDate != null ? new Date(season.endDate) : new Date(),
-      label: `Season ${season.id}`,
-    }));
-
-
-    let cumulativeKills = 0;
-    let cumulativeDeaths = 0;
-
-    const statsMap = new Map<string, number>();
-    statsEvolution.forEach(stat => {
-      cumulativeKills += stat.kills;
-      cumulativeDeaths += stat.deaths;
-      const progressiveKD = cumulativeDeaths > 0 ? cumulativeKills / cumulativeDeaths : 0;
-      const dateKey = new Date(stat.matchDate).toDateString();
-      statsMap.set(dateKey, progressiveKD);
-    });
-
-    const datasets = allPeriods.map(period => {
-
-      const periodMatches = statsEvolution.filter(stat => {
-        const date = new Date(stat.matchDate);
-        return date >= period.startDate && date <= period.endDate;
-      });
-
-      if (periodMatches.length === 0) {
-        return {
-          label: period.label,
-          data: [],
-          fill: false,
-          spanGaps: true,
-          hidden: false
-        };
-      }
-
-      const matchDates = periodMatches.map(m => new Date(m.matchDate));
-      const minDate = new Date(Math.min(...matchDates.map(d => d.getTime())));
-      const maxDate = new Date(Math.max(...matchDates.map(d => d.getTime())));
-
-      const periodDates = this.getAllDatesBetween(minDate, maxDate);
-
-      let lastValue: number | null = null;
-      const data = periodDates.map(date => {
-        const dateKey = date.toDateString();
-        const value = statsMap.get(dateKey);
-
-        if (value !== undefined) {
-          lastValue = value;
-          return lastValue;
-        } else {
-          return lastValue;
-        }
-      });
-
-      return {
-        label: period.label,
-        data: data,
-        dates: periodDates,
-        fill: false,
-        spanGaps: true,
-        hidden: false
-      };
-    });
-
-    const allDatesSet = new Set<string>();
-    datasets.forEach((dataset: any) => {
-      if (!dataset.hidden && dataset.dates) {
-        dataset.dates.forEach((date: Date) => allDatesSet.add(date.toDateString()));
-      }
-    });
-
-    const allDates = Array.from(allDatesSet)
-      .map(dateStr => new Date(dateStr))
-      .sort((a, b) => a.getTime() - b.getTime());
-
-    const labels = allDates.map(date => {
-      const day = date.getDate();
-      const month = date.toLocaleString('en-US', { month: 'short' });
-      return `${day} ${month}`;
-    });
-
-    const finalDatasets = datasets.map((dataset: any) => {
-      if (dataset.hidden || !dataset.dates) {
-        return {
-          label: dataset.label,
-          data: new Array(allDates.length).fill(null),
-          fill: false,
-          spanGaps: true,
-          hidden: dataset.hidden
-        };
-      }
-
-      const periodDataMap = new Map<string, number | null>();
-      dataset.dates.forEach((date: Date, idx: number) => {
-        periodDataMap.set(date.toDateString(), dataset.data[idx]);
-      });
-
-      const alignedData = allDates.map(date => {
-        return periodDataMap.get(date.toDateString()) ?? null;
-      });
-
-      return {
-        label: dataset.label,
-        data: alignedData,
-        fill: false,
-        spanGaps: true,
-        hidden: false
-      };
-    });
-
-    this.kdData = {
-      labels: labels,
-      datasets: finalDatasets
-    };
-  }
-
-  baseOptions: ChartOptions<'line'> = {
-    responsive: true,
-    aspectRatio: 1.75,
-    plugins: {
-      legend: {
-        labels: {
-          color: 'white',
-          boxWidth: 10,
-          boxHeight: 10,
-          padding: 10,
-          font: {
-            size: 12
-          }
+  private createChartOptions(metric: ChartMetric): ChartOptions<'line'> {
+    const config = this.metricConfigs[metric];
+    return {
+      responsive: true,
+      aspectRatio: 1.75,
+      plugins: {
+        legend: {
+          labels: {
+            color: 'white',
+            boxWidth: 10,
+            boxHeight: 10,
+            padding: 10,
+            font: { size: 12 }
+          },
+          onClick: () => { }
         },
-        onClick: () => { return }
+        title: {
+          display: true,
+          text: config.title,
+          color: 'white',
+          font: { size: 18 }
+        },
+        datalabels: { display: false }
       },
-      datalabels: {
-        display: false
-      }
-    },
-    elements: {
-      point: {
-        radius: 0,
-        hitRadius: 10
+      elements: {
+        point: { radius: 0, hitRadius: 10 },
+        line: { borderWidth: 2, tension: 0.3 }
       },
-      line: {
-        borderWidth: 2,
-        tension: 0.3
+      scales: {
+        y: {
+          ticks: { color: 'white' },
+          grid: { color: 'rgba(255, 255, 255, 0.2)' },
+          ...(config.min !== undefined && { min: config.min }),
+          ...(config.max !== undefined && { max: config.max })
+        },
+        x: { ticks: { color: 'white' } }
       }
-    },
-    scales: {
-      y: {
-        ticks: { color: 'white' },
-        grid: { color: 'rgba(255, 255, 255, 0.2)' }
-      },
-      x: {
-        ticks: { color: 'white' },
-      }
-    }
-  };
+    };
+  }
 
-  rankOptions: ChartOptions<'line'> = {
-    ...this.baseOptions,
-    plugins: {
-      ...this.baseOptions.plugins,
-      title: {
-        display: true,
-        text: 'Rank Evolution',
-        color: 'white',
-        font: {
-          size: 18
-        }
-      }
-    },
-  };
-
-  adrOptions: ChartOptions<'line'> = {
-    ...this.baseOptions,
-    plugins: {
-      ...this.baseOptions.plugins,
-      title: {
-        display: true,
-        text: 'ADR Evolution',
-        color: 'white',
-        font: {
-          size: 18
-        }
-      }
-    },
-    scales: {
-      y: {
-        ticks: { color: 'white' },
-        grid: { color: 'rgba(255, 255, 255, 0.2)' },
-        min: 70,
-        max: 80
-      },
-      x: {
-        ticks: { color: 'white' },
-      }
-    }
-  };
-
-  kdOptions: ChartOptions<'line'> = {
-    ...this.baseOptions,
-    plugins: {
-      ...this.baseOptions.plugins,
-      title: {
-        display: true,
-        text: 'K/D Evolution',
-        color: 'white',
-        font: {
-          size: 18
-        }
-      }
-    },
-    scales: {
-      y: {
-        ticks: { color: 'white' },
-        grid: { color: 'rgba(255, 255, 255, 0.2)' },
-        min: 0.9,
-        max: 1.1
-      },
-      x: {
-        ticks: { color: 'white' },
-      }
-    }
-  };
-
-  hltvOptions: ChartOptions<'line'> = {
-    ...this.baseOptions,
-    plugins: {
-      ...this.baseOptions.plugins,
-      title: {
-        display: true,
-        text: 'HLTV Evolution',
-        color: 'white',
-        font: {
-          size: 18
-        }
-      }
-    },
-    scales: {
-      y: {
-        ticks: { color: 'white' },
-        grid: { color: 'rgba(255, 255, 255, 0.2)' },
-        min: 0.9,
-        max: 1.2
-      },
-      x: {
-        ticks: { color: 'white' },
-      }
-    }
-  };
+  rankOptions = this.createChartOptions('rank');
+  adrOptions = this.createChartOptions('adr');
+  kdOptions = this.createChartOptions('kd');
+  hltvOptions = this.createChartOptions('hltv');
 }
