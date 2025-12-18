@@ -4,15 +4,13 @@
             <div class="d-flex justify-content-between align-items-center">
                 <span>DAILY EVOLUTION</span>
                 <div class="date-range-controls d-flex align-items-center gap-2">
-                    <button class="btn btn-sm btn-outline-light" (click)="decreaseDateRange()"
-                        [disabled]="dateRangeDays() <= minDateRange" title="Decrease range by 1 day">
-                        -
+                    @for (filter of dateRangeFilters; track filter.value) {
+                    <button class="btn btn-sm" [class.btn-light]="selectedFilter() === filter.value"
+                        [class.btn-outline-light]="selectedFilter() !== filter.value"
+                        (click)="setDateRangeFilter(filter.value)">
+                        {{ filter.label }}
                     </button>
-                    <span class="text-white fw-semibold">Last {{ dateRangeDays() }} days</span>
-                    <button class="btn btn-sm btn-outline-light" (click)="increaseDateRange()"
-                        [disabled]="dateRangeDays() >= maxDateRange" title="Increase range by 1 day">
-                        +
-                    </button>
+                    }
                 </div>
             </div>
         </div>
@@ -30,7 +28,7 @@
                     <div class="col-xl-4 col-xxl-3">
                         <div class="chart-item">
                             <div class="value fs-2">
-                                <app-chart [chartType]="'line'" [chartData]="kdData" [chartOptions]="kdOptions">
+                                <app-chart [chartType]="'bar'" [chartData]="kdData" [chartOptions]="kdOptions">
                                 </app-chart>
                             </div>
                         </div>

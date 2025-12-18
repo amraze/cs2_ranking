@@ -28,10 +28,16 @@ export class Evolution implements OnInit {
   seasonsSignal = signal<Season[]>([]);
   selectedSeasonSignal = signal<Season | null>(null);
   statsEvolutionSignal = signal<EvolutionResponseDto[]>([]);
+  dateRangeDays = signal<number>(1);
+  diffDays = signal<number>(0);
+  selectedFilter = signal<'all' | 'week' | 'month' | '3months'>('all');
 
-  dateRangeDays = signal<number>(30);
-  minDateRange = 7;
-  maxDateRange = 90;
+  dateRangeFilters = [
+    { label: 'All', value: 'all' as const },
+    { label: 'Last Week', value: 'week' as const },
+    { label: 'Last Month', value: 'month' as const },
+    { label: 'Last 3 Months', value: '3months' as const }
+  ];
 
   @Input() set selectedSeason(value: Season | null) {
     this.selectedSeasonSignal.set(value);
@@ -83,11 +89,35 @@ export class Evolution implements OnInit {
       let seasons = this.seasonsSignal();
       const statsEvolution = this.statsEvolutionSignal();
       const selected = this.selectedSeasonSignal();
-      const dateRange = this.dateRangeDays();
+      const filter = this.selectedFilter();
 
       if (selected) seasons = [selected];
       else seasons = [seasons[seasons.length - 1]];
 
+      if (seasons.length > 0 && statsEvolution.length > 0) {
+        const season = seasons[0];
+        const periodMatches = statsEvolution.filter(stat => {
+          const date = new Date(stat.matchDate);
+          const startDate = new Date(season.startDate);
+          const endDate = season.endDate ? new Date(season.endDate) : new Date();
+          return date >= startDate && date <= endDate;
+        });
+
+        if (periodMatches.length > 0) {
+          const firstDate = periodMatches[0].matchDate;
+          const lastDate = periodMatches[periodMatches.length - 1].matchDate;
+          const first = new Date(firstDate);
+          const last = new Date(lastDate);
+          const diffMs = last.getTime() - first.getTime();
+          const calculatedDiffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+          this.diffDays.set(calculatedDiffDays);
+          const dateRange = this.getDateRangeFromFilter(filter, calculatedDiffDays);
+          this.dateRangeDays.set(dateRange);
+        }
+      }
+
+      const dateRange = this.dateRangeDays();
       if (seasons.length > 0 && statsEvolution.length > 0) {
         this.ranksData = this.prepareChartData('rank', seasons, statsEvolution, dateRange);
         this.adrData = this.prepareChartData('adr', seasons, statsEvolution, dateRange);
@@ -103,17 +133,21 @@ export class Evolution implements OnInit {
     });
   }
 
-  increaseDateRange(): void {
-    const current = this.dateRangeDays();
-    if (current < this.maxDateRange) {
-      this.dateRangeDays.set(current + 1);
-    }
+  setDateRangeFilter(filter: 'all' | 'week' | 'month' | '3months'): void {
+    this.selectedFilter.set(filter);
   }
 
-  decreaseDateRange(): void {
-    const current = this.dateRangeDays();
-    if (current > this.minDateRange) {
-      this.dateRangeDays.set(current - 1);
+  private getDateRangeFromFilter(filter: 'all' | 'week' | 'month' | '3months', maxDays: number): number {
+    switch (filter) {
+      case 'week':
+        return Math.min(7, maxDays);
+      case 'month':
+        return Math.min(30, maxDays);
+      case '3months':
+        return Math.min(90, maxDays);
+      case 'all':
+      default:
+        return maxDays;
     }
   }
 
@@ -129,12 +163,7 @@ export class Evolution implements OnInit {
     });
   }
 
-  private prepareChartData(
-    metric: ChartMetric,
-    seasons: Season[],
-    statsEvolution: EvolutionResponseDto[],
-    dateRangeDays: number
-  ): ChartData<'line', (number | null)[]> {
+  private prepareChartData(metric: ChartMetric, seasons: Season[], statsEvolution: EvolutionResponseDto[], dateRangeDays: number): ChartData<'line', (number | null)[]> {
     const config = this.metricConfigs[metric];
 
     const periods = seasons.map(season => ({
@@ -150,7 +179,6 @@ export class Evolution implements OnInit {
       });
 
       periodMatches = this.filterByDateRange(periodMatches, dateRangeDays);
-
       if (periodMatches.length === 0) {
         return { label: period.label, data: [], dates: [], fill: config.fill };
       }
@@ -224,6 +252,27 @@ export class Evolution implements OnInit {
       };
     });
 
+    // Add reference line based on metric type
+    if (metric === 'adr') {
+      finalDatasets.push({
+        label: 'Average ADR',
+        data: new Array(allDates.length).fill(90),
+        fill: false,
+        spanGaps: true,
+        borderWidth: 2,
+        pointRadius: 0,
+      } as any);
+    } else if (metric === 'hltv') {
+      finalDatasets.push({
+        label: 'Average HLTV',
+        data: new Array(allDates.length).fill(1.0),
+        fill: false,
+        spanGaps: true,
+        borderWidth: 2,
+        pointRadius: 0,
+      } as any);
+    }
+
     return { labels, datasets: finalDatasets };
   }
 
@@ -271,7 +320,7 @@ export class Evolution implements OnInit {
       },
       elements: {
         point: {
-          radius: 3,
+          radius: 0,
           hitRadius: 10,
           hoverRadius: 5,
           backgroundColor: 'transparent',
