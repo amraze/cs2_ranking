@@ -68,10 +68,15 @@ export class Evolution implements OnInit {
       calculator: (stat) => stat.total > 0 ? stat.hltv / stat.total : 0
     },
     kd: {
-      title: 'K/D Evolution',
-      fill: false,
+      title: 'K - D Evolution',
+      fill: true,
       cumulative: true,
-      calculator: (stat) => stat.kills / stat.deaths,
+      calculator: (stat) => stat.kills - stat.deaths,
+      cumulativeCalculator: (stats) => {
+        const totalKills = stats.reduce((sum, stat) => sum + stat.kills, 0);
+        const totalDeaths = stats.reduce((sum, stat) => sum + stat.deaths, 0);
+        return totalKills - totalDeaths;
+      }
     }
   };
 
@@ -159,20 +164,34 @@ export class Evolution implements OnInit {
         const maxDate = new Date(Math.max(...matchDates.map(d => d.getTime())));
         const allDates = this.getDateRange(minDate, maxDate);
 
-        const statsMap = new Map<string, number>();
-        periodMatches.forEach(stat => {
-          statsMap.set(new Date(stat.matchDate).toDateString(), config.calculator(stat));
-        });
+        if (config.cumulativeCalculator) {
+          const cumulativeCalculator = config.cumulativeCalculator;
+          const data = allDates.map(date => {
+            const matchesUpToDate = periodMatches.filter(stat => {
+              const matchDate = new Date(stat.matchDate);
+              return matchDate <= date;
+            });
 
-        let lastValue: number | null = null;
-        const data = allDates.map(date => {
-          const value = statsMap.get(date.toDateString());
-          if (value !== undefined) lastValue = value;
-          return lastValue;
-        });
+            if (matchesUpToDate.length === 0) return null;
+            return cumulativeCalculator(matchesUpToDate);
+          });
 
-        return { label: period.label, data, dates: allDates, fill: config.fill };
+          return { label: period.label, data, dates: allDates, fill: config.fill };
+        } else {
+          const statsMap = new Map<string, number>();
+          periodMatches.forEach(stat => {
+            statsMap.set(new Date(stat.matchDate).toDateString(), config.calculator(stat));
+          });
 
+          let lastValue: number | null = null;
+          const data = allDates.map(date => {
+            const value = statsMap.get(date.toDateString());
+            if (value !== undefined) lastValue = value;
+            return lastValue;
+          });
+
+          return { label: period.label, data, dates: allDates, fill: config.fill };
+        }
       } else {
         const dates = periodMatches.map(m => new Date(m.matchDate));
         const data = periodMatches.map(stat => config.calculator(stat));
@@ -237,6 +256,10 @@ export class Evolution implements OnInit {
     return {
       responsive: true,
       aspectRatio: 1.75,
+      animation: {
+        duration: 300,
+        easing: 'easeInOutQuad'
+      },
       plugins: {
         legend: {
           display: false
