@@ -12,7 +12,7 @@ interface MetricConfig {
   title: string;
   min?: number;
   max?: number;
-  fill: boolean;
+  fill: boolean | string;
   cumulative: boolean;
   calculator: (stat: EvolutionResponseDto) => number;
   cumulativeCalculator?: (stats: EvolutionResponseDto[]) => number;
@@ -34,9 +34,9 @@ export class Evolution implements OnInit {
 
   dateRangeFilters = [
     { label: 'All', value: 'all' as const },
-    { label: 'Last Week', value: 'week' as const },
+    { label: 'Last 3 Months', value: '3months' as const },
     { label: 'Last Month', value: 'month' as const },
-    { label: 'Last 3 Months', value: '3months' as const }
+    { label: 'Last Week', value: 'week' as const }
   ];
 
   @Input() set selectedSeason(value: Season | null) {
@@ -61,13 +61,13 @@ export class Evolution implements OnInit {
     },
     adr: {
       title: 'ADR Evolution',
-      fill: false,
+      fill: "+1",
       cumulative: false,
       calculator: (stat) => stat.total > 0 ? stat.adr / stat.total : 0
     },
     hltv: {
       title: 'HLTV Evolution',
-      fill: false,
+      fill: "+1",
       cumulative: false,
       calculator: (stat) => stat.total > 0 ? stat.hltv / stat.total : 0
     },
@@ -92,7 +92,6 @@ export class Evolution implements OnInit {
       const filter = this.selectedFilter();
 
       if (selected) seasons = [selected];
-      else seasons = [seasons[seasons.length - 1]];
 
       if (seasons.length > 0 && statsEvolution.length > 0) {
         const season = seasons[0];
@@ -265,6 +264,7 @@ export class Evolution implements OnInit {
       finalDatasets.push({
         label: 'Average HLTV',
         data: new Array(allDates.length).fill(1.0),
+        backgroundColor: 'rgba(255, 0, 0, 0.2)',
         fill: false,
         spanGaps: true,
         borderWidth: 2,
