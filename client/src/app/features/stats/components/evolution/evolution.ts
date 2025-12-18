@@ -252,7 +252,6 @@ export class Evolution implements OnInit {
       };
     });
 
-    // Add reference line based on metric type
     if (metric === 'adr') {
       finalDatasets.push({
         label: 'Average ADR',
