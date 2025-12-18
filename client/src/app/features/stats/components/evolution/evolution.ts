@@ -1,4 +1,3 @@
-// evolution.component.ts
 import { Component, effect, Input, OnInit, signal } from '@angular/core';
 import { ChartData, ChartOptions } from 'chart.js';
 import { SharedImports } from '../../../../shared/shared-imports';
@@ -30,8 +29,7 @@ export class Evolution implements OnInit {
   selectedSeasonSignal = signal<Season | null>(null);
   statsEvolutionSignal = signal<EvolutionResponseDto[]>([]);
 
-  // Date range controls
-  dateRangeDays = signal<number>(30); // Start with 30 days
+  dateRangeDays = signal<number>(30);
   minDateRange = 7;
   maxDateRange = 90;
 
@@ -151,7 +149,6 @@ export class Evolution implements OnInit {
         return date >= period.startDate && date <= period.endDate;
       });
 
-      // Apply date range filter
       periodMatches = this.filterByDateRange(periodMatches, dateRangeDays);
 
       if (periodMatches.length === 0) {
