@@ -1,3 +1,4 @@
+// evolution.component.ts
 import { Component, effect, Input, OnInit, signal } from '@angular/core';
 import { ChartData, ChartOptions } from 'chart.js';
 import { SharedImports } from '../../../../shared/shared-imports';
@@ -28,6 +29,11 @@ export class Evolution implements OnInit {
   seasonsSignal = signal<Season[]>([]);
   selectedSeasonSignal = signal<Season | null>(null);
   statsEvolutionSignal = signal<EvolutionResponseDto[]>([]);
+
+  // Date range controls
+  dateRangeDays = signal<number>(30); // Start with 30 days
+  minDateRange = 7;
+  maxDateRange = 90;
 
   @Input() set selectedSeason(value: Season | null) {
     this.selectedSeasonSignal.set(value);
@@ -62,15 +68,10 @@ export class Evolution implements OnInit {
       calculator: (stat) => stat.total > 0 ? stat.hltv / stat.total : 0
     },
     kd: {
-      title: 'K - D Evolution',
-      fill: true,
+      title: 'K/D Evolution',
+      fill: false,
       cumulative: true,
-      calculator: (stat) => stat.kills - stat.deaths,
-      cumulativeCalculator: (stats) => {
-        const totalKills = stats.reduce((sum, stat) => sum + stat.kills, 0);
-        const totalDeaths = stats.reduce((sum, stat) => sum + stat.deaths, 0);
-        return totalKills - totalDeaths;
-      }
+      calculator: (stat) => stat.kills / stat.deaths,
     }
   };
 
@@ -79,14 +80,16 @@ export class Evolution implements OnInit {
       let seasons = this.seasonsSignal();
       const statsEvolution = this.statsEvolutionSignal();
       const selected = this.selectedSeasonSignal();
+      const dateRange = this.dateRangeDays();
 
       if (selected) seasons = [selected];
+      else seasons = [seasons[seasons.length - 1]];
 
       if (seasons.length > 0 && statsEvolution.length > 0) {
-        this.ranksData = this.prepareChartData('rank', seasons, statsEvolution);
-        this.adrData = this.prepareChartData('adr', seasons, statsEvolution);
-        this.kdData = this.prepareChartData('kd', seasons, statsEvolution);
-        this.hltvData = this.prepareChartData('hltv', seasons, statsEvolution);
+        this.ranksData = this.prepareChartData('rank', seasons, statsEvolution, dateRange);
+        this.adrData = this.prepareChartData('adr', seasons, statsEvolution, dateRange);
+        this.kdData = this.prepareChartData('kd', seasons, statsEvolution, dateRange);
+        this.hltvData = this.prepareChartData('hltv', seasons, statsEvolution, dateRange);
       }
     });
   }
@@ -97,7 +100,38 @@ export class Evolution implements OnInit {
     });
   }
 
-  private prepareChartData(metric: ChartMetric, seasons: Season[], statsEvolution: EvolutionResponseDto[]): ChartData<'line', (number | null)[]> {
+  increaseDateRange(): void {
+    const current = this.dateRangeDays();
+    if (current < this.maxDateRange) {
+      this.dateRangeDays.set(current + 1);
+    }
+  }
+
+  decreaseDateRange(): void {
+    const current = this.dateRangeDays();
+    if (current > this.minDateRange) {
+      this.dateRangeDays.set(current - 1);
+    }
+  }
+
+  private filterByDateRange(statsEvolution: EvolutionResponseDto[], dateRangeDays: number): EvolutionResponseDto[] {
+    if (statsEvolution.length === 0) return [];
+    const dates = statsEvolution.map(stat => new Date(stat.matchDate).getTime());
+    const maxDate = new Date(Math.max(...dates));
+    const startDate = new Date(maxDate);
+    startDate.setDate(startDate.getDate() - dateRangeDays);
+    return statsEvolution.filter(stat => {
+      const statDate = new Date(stat.matchDate);
+      return statDate >= startDate && statDate <= maxDate;
+    });
+  }
+
+  private prepareChartData(
+    metric: ChartMetric,
+    seasons: Season[],
+    statsEvolution: EvolutionResponseDto[],
+    dateRangeDays: number
+  ): ChartData<'line', (number | null)[]> {
     const config = this.metricConfigs[metric];
 
     const periods = seasons.map(season => ({
@@ -107,10 +141,13 @@ export class Evolution implements OnInit {
     }));
 
     const datasets = periods.map(period => {
-      const periodMatches = statsEvolution.filter(stat => {
+      let periodMatches = statsEvolution.filter(stat => {
         const date = new Date(stat.matchDate);
         return date >= period.startDate && date <= period.endDate;
       });
+
+      // Apply date range filter
+      periodMatches = this.filterByDateRange(periodMatches, dateRangeDays);
 
       if (periodMatches.length === 0) {
         return { label: period.label, data: [], dates: [], fill: config.fill };
@@ -122,35 +159,20 @@ export class Evolution implements OnInit {
         const maxDate = new Date(Math.max(...matchDates.map(d => d.getTime())));
         const allDates = this.getDateRange(minDate, maxDate);
 
-        if (config.cumulativeCalculator) {
-          const cumulativeCalculator = config.cumulativeCalculator;
-          const data = allDates.map(date => {
-            const matchesUpToDate = periodMatches.filter(stat => {
-              const matchDate = new Date(stat.matchDate);
-              return matchDate <= date;
-            });
+        const statsMap = new Map<string, number>();
+        periodMatches.forEach(stat => {
+          statsMap.set(new Date(stat.matchDate).toDateString(), config.calculator(stat));
+        });
 
-            if (matchesUpToDate.length === 0) return null;
-            return cumulativeCalculator(matchesUpToDate);
-          });
+        let lastValue: number | null = null;
+        const data = allDates.map(date => {
+          const value = statsMap.get(date.toDateString());
+          if (value !== undefined) lastValue = value;
+          return lastValue;
+        });
 
-          return { label: period.label, data, dates: allDates, fill: config.fill };
-        } else {
-          // Original cumulative logic for rank
-          const statsMap = new Map<string, number>();
-          periodMatches.forEach(stat => {
-            statsMap.set(new Date(stat.matchDate).toDateString(), config.calculator(stat));
-          });
+        return { label: period.label, data, dates: allDates, fill: config.fill };
 
-          let lastValue: number | null = null;
-          const data = allDates.map(date => {
-            const value = statsMap.get(date.toDateString());
-            if (value !== undefined) lastValue = value;
-            return lastValue;
-          });
-
-          return { label: period.label, data, dates: allDates, fill: config.fill };
-        }
       } else {
         const dates = periodMatches.map(m => new Date(m.matchDate));
         const data = periodMatches.map(stat => config.calculator(stat));
@@ -217,14 +239,7 @@ export class Evolution implements OnInit {
       aspectRatio: 1.75,
       plugins: {
         legend: {
-          labels: {
-            color: 'white',
-            boxWidth: 10,
-            boxHeight: 10,
-            padding: 10,
-            font: { size: 12 }
-          },
-          onClick: () => { }
+          display: false
         },
         title: {
           display: true,
@@ -235,7 +250,13 @@ export class Evolution implements OnInit {
         datalabels: { display: false }
       },
       elements: {
-        point: { radius: 0, hitRadius: 10 },
+        point: {
+          radius: 3,
+          hitRadius: 10,
+          hoverRadius: 5,
+          backgroundColor: 'transparent',
+          borderWidth: 0
+        },
         line: { borderWidth: 2, tension: 0.3 }
       },
       scales: {
