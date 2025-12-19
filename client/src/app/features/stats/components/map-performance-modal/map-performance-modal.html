@@ -1,0 +1,110 @@
+<div class="modal" id="mapPerformanceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-container">
+        <button class="close-btn" data-bs-dismiss="modal">
+            <!-- SVG close icon -->
+        </button>
+
+        <!-- Header -->
+        <div class="modal-header">
+            <img [src]="mapValue.picturePath" [alt]="mapValue.name" class="map-image">
+            <div class="header-overlay">
+                <img [src]="mapValue.logoPath" [alt]="mapValue.name" class="map-logo">
+                <h2 class="map-name">{{ mapValue.name }}</h2>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="modal-body">
+            <div class="stats-primary">
+                <div class="stat-card stat-highlight">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-content">
+                        <span class="stat-label">Win Rate</span>
+                        <span class="stat-value">
+                            {{ perf.matches ? (perf.wins / perf.matches * 100 | number:'1.1-1') : 0 }}%
+                        </span>
+                    </div>
+                    <div class="stat-bar">
+                        <div class="stat-bar-fill"
+                            [style.width.%]="perf.matches ? (perf.wins / perf.matches * 100) : 0">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">⚔️</div>
+                    <div class="stat-content">
+                        <span class="stat-label">K/D Ratio</span>
+                        <span class="stat-value">
+                            {{ perf.deaths ? (perf.kills / perf.deaths | number:'1.2-2') : perf.kills }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">💥</div>
+                    <div class="stat-content">
+                        <span class="stat-label">ADR</span>
+                        <span class="stat-value">{{ perf.matches ? (perf.adr / perf.matches | number:'1.0-0') : 0
+                            }}</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-content">
+                        <span class="stat-label">HLTV</span>
+                        <span class="stat-value">{{ perf.matches ? (perf.hltv / perf.matches | number:'1.1-2') : 0
+                            }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Match Results -->
+            <div class="match-results">
+                <h3>Match Results</h3>
+                <div class="results-grid">
+                    <div class="result-item result-win">
+                        <span class="result-label">Wins</span>
+                        <span class="result-value">{{ perf.wins }}</span>
+                    </div>
+                    <div class="result-item result-loss">
+                        <span class="result-label">Losses</span>
+                        <span class="result-value">{{ perf.losses }}</span>
+                    </div>
+                    <div class="result-item result-draw">
+                        <span class="result-label">Draws</span>
+                        <span class="result-value">{{ perf.draws }}</span>
+                    </div>
+                    <div class="result-item result-total">
+                        <span class="result-label">Total Matches</span>
+                        <span class="result-value">{{ perf.matches }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Stats -->
+            <div class="detailed-stats">
+                <h3>Combat Statistics</h3>
+                <div class="stats-table">
+                    <div class="stat-row">
+                        <span class="stat-row-label">Kills</span>
+                        <span class="stat-row-value kills">{{ perf.kills }}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-row-label">Deaths</span>
+                        <span class="stat-row-value deaths">{{ perf.deaths }}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-row-label">Assists</span>
+                        <span class="stat-row-value assists">{{ perf.assists }}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-row-label">Total Damage</span>
+                        <span class="stat-row-value">{{ perf.adr }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

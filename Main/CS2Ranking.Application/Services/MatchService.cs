@@ -7,12 +7,13 @@ using CS2Ranking.Domain.Factories;
 
 namespace CS2Ranking.Application.Services
 {
-    public class MatchService(IMatchRepository matchRepository, IGoogleSheetsService googleSheetsService, IMapService mapService, IRankService rankService) : IMatchService
+    public class MatchService(IMatchRepository matchRepository, IGoogleSheetsService googleSheetsService, IMapService mapService, IRankService rankService, IScopeGGService scopeGGService) : IMatchService
     {
         private readonly IGoogleSheetsService _googleSheetsService = googleSheetsService;
         private readonly IMapService _mapService = mapService;
         private readonly IRankService _rankService = rankService;
         private readonly IMatchRepository _matchRepository = matchRepository;
+        private readonly IScopeGGService _scopeGGService = scopeGGService;
 
         public async Task ImportFromSheetAsync(string sheetLink)
         {
@@ -35,6 +36,31 @@ namespace CS2Ranking.Application.Services
             if (matches.Count == 0) return;
             await _matchRepository.DeleteAllAsync();
             await _matchRepository.AddRangeAsync(matches);
+        }
+
+        public async Task<bool> ImportFromScopeAsync()
+        {
+            var response = await _scopeGGService.GetScopeGGDataAsync();
+            var matches = new List<Match>();
+
+            foreach (var scopeMatch in response)
+            {
+                var parameters = MatchMapper.FromScopeGG(scopeMatch);
+                var map = await _mapService.GetMapByNameAsync(parameters.MapName);
+                var rank = await _rankService.GetRankByScoreAsync(parameters.RankScore ?? default);
+
+                if (map != null && rank != null)
+                {
+                    var match = MatchFactory.Create(parameters, map.Id, rank.Id);
+                    matches.Add(match);
+                }
+            }
+
+            if (matches.Count == 0)
+                return false;
+
+            await _matchRepository.AddRangeAsync(matches);
+            return true;
         }
 
         public async Task<IEnumerable<IGrouping<DateTime, MatchResponseDto>>> GetGroupedMatchesAsync(int? limit, int? offset)

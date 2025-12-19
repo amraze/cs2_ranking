@@ -15,7 +15,6 @@ namespace CS2Ranking.Infrastructure.ExternalServices
         private readonly IConfiguration _config = config;
         private readonly IMatchRepository _matchRepository = matchRepository;
 
-
         public async Task<List<ScopeGGResponseDto>> GetScopeGGDataAsync()
         {
             try

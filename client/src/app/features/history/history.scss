@@ -191,3 +191,50 @@
         transform: translateX(100%);
     }
 }
+
+.btn-refresh {
+    background: rgba(229, 135, 22, 0.1);
+    border: 2px solid #E58716;
+    color: #E58716;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+
+    &:hover:not(:disabled) {
+        background: rgba(229, 135, 22, 0.2);
+        border-color: #ff9a2e;
+        color: #ff9a2e;
+        transform: rotate(90deg);
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .refresh-icon {
+        font-size: 22px;
+        font-weight: bold;
+        display: inline-block;
+        transition: transform 0.3s ease;
+
+        &.spinning {
+            animation: spin 1s linear infinite;
+        }
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}

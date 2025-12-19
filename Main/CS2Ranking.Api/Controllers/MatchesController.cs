@@ -10,13 +10,30 @@ namespace CS2Ranking.Api.Controllers
     {
         private readonly IMatchService _matchService = matchService;
 
-        [HttpPost("import")]
+        [HttpGet("import/scope")]
+        public async Task<IActionResult> ImportScopeMatches()
+        {
+            try
+            {
+                var hasInserted = await _matchService.ImportFromScopeAsync();
+                if (!hasInserted)
+                    return NoContent(); 
+
+                return Ok(new { message = "Matches imported successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error importing matches: {ex.Message}");
+            }
+        }
+
+        [HttpPost("import/sheets")]
         public async Task<IActionResult> ImportMatches([FromBody] GoogleSheetRequestDto request)
         {
             try
             {
                 await _matchService.ImportFromSheetAsync(request.SheetLink);
-                return Ok(); 
+                return Ok();
             }
             catch (Exception ex)
             {

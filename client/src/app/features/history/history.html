@@ -1,5 +1,10 @@
 <div class="content">
-    <h3 class="header mb-2 fw-bold">Match History</h3>
+    <div class="d-flex align-items-center mb-2">
+        <h3 class="header fw-bold mb-0">Match History</h3>
+        <button class="btn btn-refresh ms-3" title="Refresh" (click)="refreshMatches()" [disabled]="isRefreshing">
+            <i class="refresh-icon" [ngClass]="{'spinning': isRefreshing}">↻</i>
+        </button>
+    </div>
     <div class="section-container">
         <div class="section-content" *ngFor="let matchDates of matches; index as i">
             <div class="section-header p-3 d-flex justify-content-between" [ngClass]="{ 'first': i === 0 }">

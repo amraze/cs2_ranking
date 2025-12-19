@@ -21,6 +21,7 @@ export class History implements OnInit {
   protected ranks: { [id: string]: Rank } = {};
   protected maps: { [id: string]: Map } = {};
   protected hasMoreMatches: boolean = true;
+  protected isRefreshing: boolean = false;
   EntityCustomizer = EntityCustomizer;
 
   constructor(private matchService: MatchService, private mapService: MapService, private rankService: RankService) { }
@@ -61,6 +62,15 @@ export class History implements OnInit {
       }
       if (response.length == 0) this.hasMoreMatches = false;
     })
+  }
+
+  refreshMatches() {
+    this.isRefreshing = true;
+    this.matchService.importScopeMatches().subscribe(response => {
+      setTimeout(() => {
+        this.isRefreshing = false;
+      }, 2000);
+    });
   }
 
   loadNextMatches() {

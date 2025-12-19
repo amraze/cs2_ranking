@@ -43,8 +43,11 @@ export class MatchService {
     );
   }
 
+  importSheetMatches(sheetsLink: string): Observable<void> {
+    return this.http.post<void>(`${this.url}/import/sheets`, { sheetLink: sheetsLink });
+  }
 
-  importMatches(sheetsLink: string): Observable<void> {
-    return this.http.post<void>(`${this.url}/import`, { sheetLink: sheetsLink });
+  importScopeMatches(): Observable<void> {
+    return this.http.get<void>(`${this.url}/import/scope`);
   }
 }

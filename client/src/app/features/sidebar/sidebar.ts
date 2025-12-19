@@ -23,8 +23,12 @@ export class Sidebar {
     this.router.navigateByUrl(route);
   }
 
-  protected logout(): void {
-    this.authenticationService.logout();
-    this.router.navigate(["login"]);
+  logout() {
+    const confirmed = confirm('Are you sure you want to log out?');
+
+    if (confirmed) {
+      localStorage.removeItem('token');
+      this.router.navigate(['']);
+    }
   }
 }

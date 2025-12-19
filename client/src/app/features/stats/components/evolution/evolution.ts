@@ -93,7 +93,6 @@ export class Evolution implements OnInit {
       let periods: { startDate: Date; endDate: Date; label: string }[] = [];
 
       if (selected) {
-        // single selected season
         periods = [{
           startDate: new Date(selected.startDate),
           endDate: selected.endDate ? new Date(selected.endDate) : new Date(),
@@ -210,9 +209,9 @@ export class Evolution implements OnInit {
     });
 
     if (metric === 'adr') {
-      finalDatasets.push({ label: 'Average ADR', data: new Array(allDates.length).fill(90), fill: false, spanGaps: true, borderColor: 'red', borderWidth: 2, pointRadius: 0 } as any);
+      finalDatasets.push({ label: 'Average ADR', data: new Array(allDates.length).fill(75.5), fill: false, spanGaps: true, borderColor: 'red', borderWidth: 2, pointRadius: 0 } as any);
     } else if (metric === 'hltv') {
-      finalDatasets.push({ label: 'Average HLTV', data: new Array(allDates.length).fill(1.0), borderColor: 'red', fill: false, spanGaps: true, borderWidth: 2, pointRadius: 0 } as any);
+      finalDatasets.push({ label: 'Average HLTV', data: new Array(allDates.length).fill(1.03), borderColor: 'red', fill: false, spanGaps: true, borderWidth: 2, pointRadius: 0 } as any);
     }
 
     return { labels, datasets: finalDatasets };
