@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of, tap } from 'rxjs';
+import { map, Observable, of, tap } from 'rxjs';
 import { EvolutionResponseDto } from '../models/evolution-response-dto';
 import { CacheManager } from '../../shared/utils/cache-manager';
 import { Match } from '../models/match.interface';
@@ -47,7 +47,11 @@ export class MatchService {
     return this.http.post<void>(`${this.url}/import/sheets`, { sheetLink: sheetsLink });
   }
 
-  importScopeMatches(): Observable<void> {
-    return this.http.get<void>(`${this.url}/import/scope`);
+  importScopeMatches(): Observable<boolean> {
+    return this.http
+      .get<void>(`${this.url}/import/scope`, { observe: 'response' })
+      .pipe(
+        map(response => response.status === 204)
+      );
   }
 }
