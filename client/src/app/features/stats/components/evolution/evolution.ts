@@ -30,7 +30,7 @@ export class Evolution implements OnInit {
   statsEvolutionSignal = signal<EvolutionResponseDto[]>([]);
   dateRangeDays = signal<number>(1);
   diffDays = signal<number>(0);
-  selectedFilter = signal<'all' | 'week' | 'month' | '3months'>('all');
+  selectedFilter = signal<'all' | 'week' | 'month' | '3months'>('month');
 
   dateRangeFilters = [
     { label: 'All', value: 'all' as const },

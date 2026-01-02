@@ -69,9 +69,8 @@ export class History implements OnInit {
     this.matchService.importScopeMatches().subscribe(isNoContent => {
       setTimeout(() => {
         this.isRefreshing = false;
-        if (isNoContent) {
-          console.log('204 No Content');
-        } else {
+        if (!isNoContent) {
+          this.matchService.clearCache();
           this.getMatches();
         }
       }, 2000);

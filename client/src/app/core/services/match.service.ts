@@ -47,6 +47,10 @@ export class MatchService {
     return this.http.post<void>(`${this.url}/import/sheets`, { sheetLink: sheetsLink });
   }
 
+  clearCache(): void {
+    this.cacheManager.clear();
+  }
+
   importScopeMatches(): Observable<boolean> {
     return this.http
       .get<void>(`${this.url}/import/scope`, { observe: 'response' })
