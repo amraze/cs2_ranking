@@ -24,6 +24,18 @@
     overflow: auto;
 }
 
+@media (min-width: 1400px) {
+    .stats1 .stats1row {
+        height: 60px !important;
+    }
+}
+
+@media (max-width: 1399.98px) {
+    .stats1 .stats1row {
+        height: 180px !important;
+    }
+}
+
 /* Circular Progress Stats */
 .stat-card {
     border-radius: 15px;
