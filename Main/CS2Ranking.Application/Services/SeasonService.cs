@@ -11,7 +11,9 @@ namespace CS2Ranking.Application.Services
 
         public async Task<IEnumerable<SeasonResponseDto>> GetAllSeasonsAsync()
         {
-            var seasons = await _seasonRepository.GetAllAsync();
+            var seasons = (await _seasonRepository.GetAllAsync())
+                .OrderBy(s => s.StartDate)
+                .ToList();
             var seasonDtos = seasons.Select(season => new SeasonResponseDto
             {
                 Id = season.Id,

@@ -13,7 +13,7 @@ namespace CS2Ranking.Infrastructure.Data.Seeders
         {
             var mapsToSeed = new List<(string name, string picturePath, string logoPath)>
             {
-                ("de_anubis", "https://app.scope.gg/static/records/de_anubis.webp", "https://app.scope.gg/static/records/de_anubis.webp"),
+                ("de_anubis", "https://app.scope.gg/static/records/de_anubis.webp", "https://scope-cs2-radars-dev.s3.eu-central-1.amazonaws.com/de_anubis/3199361692.svg"),
                 ("de_inferno", "https://app.scope.gg/static/records/de_inferno.webp", "https://scope-cs2-radars-dev.s3.eu-central-1.amazonaws.com/de_inferno/160854753.svg"),
                 ("de_mirage", "https://app.scope.gg/static/records/de_mirage.webp", "https://scope-cs2-radars-dev.s3.eu-central-1.amazonaws.com/de_mirage/2821631066.svg"),
                 ("de_train", "https://app.scope.gg/static/records/de_train.webp", "https://scope-cs2-radars-dev.s3.eu-central-1.amazonaws.com/de_train/3451132749.svg"),
