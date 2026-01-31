@@ -11,29 +11,26 @@ namespace CS2Ranking.Infrastructure.Data.Seeders
 
         public void Seed()
         {
-            _context.Season.ExecuteDelete();
-
-            var seasons = new List<Season>
+            var seasonsToSeed = new List<(string name, DateTime start_date, DateTime? end_date)>
             {
-                _seasonFactory.Create(
-                    name: "Season 1",
-                    start_date: new DateTime(2023, 9, 1, 0, 0, 0, DateTimeKind.Utc),
-                    end_date: new DateTime(2025, 1, 31, 0, 0, 0, DateTimeKind.Utc)
-                ),
-                _seasonFactory.Create(
-                    name: "Season 2",
-                    start_date: new DateTime(2025, 1, 29, 0, 0, 0, DateTimeKind.Utc),
-                    end_date: new DateTime(2025, 7, 14, 0, 0, 0, DateTimeKind.Utc)
-                ),
-                _seasonFactory.Create(
-                    name: "Season 3",
-                    start_date: new DateTime(2025, 7, 15, 0, 0, 0, DateTimeKind.Utc),
-                    end_date: null
-                )
+                ("Season 1", new DateTime(2023, 9, 1, 0, 0, 0, DateTimeKind.Utc), new DateTime(2025, 1, 31, 0, 0, 0, DateTimeKind.Utc)),
+                ("Season 2", new DateTime(2025, 1, 29, 0, 0, 0, DateTimeKind.Utc), new DateTime(2025, 7, 14, 0, 0, 0, DateTimeKind.Utc)),
+                ("Season 3", new DateTime(2025, 7, 15, 0, 0, 0, DateTimeKind.Utc), new DateTime(2026, 1, 19, 0, 0, 0, DateTimeKind.Utc)),
+                ("Season 4", new DateTime(2026, 1, 21, 0, 0, 0, DateTimeKind.Utc), null)
             };
 
-            _context.Season.AddRange(seasons);
-            _context.SaveChanges();
+            var existingSeasonNames = _context.Season.Select(s => s.Name).ToHashSet();
+            
+            var newSeasons = seasonsToSeed
+                .Where(s => !existingSeasonNames.Contains(s.name))
+                .Select(s => _seasonFactory.Create(name: s.name, start_date: s.start_date, end_date: s.end_date))
+                .ToList();
+
+            if (newSeasons.Any())
+            {
+                _context.Season.AddRange(newSeasons);
+                _context.SaveChanges();
+            }
         }
     }
 }

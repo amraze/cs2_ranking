@@ -11,20 +11,29 @@ namespace CS2Ranking.Infrastructure.Data.Seeders
 
         public void Seed()
         {
-            _context.Rank.ExecuteDelete();
-            var ranks = new List<Rank>
+            var ranksToSeed = new List<(string name, int ratingMin, string picturePath)>
             {
-                _rankFactory.Create(name: "Common", ratingMin : 0, picturePath: "https://static.csstats.gg/images/ranks/cs2/rating.common.png"),
-                _rankFactory.Create(name: "Uncommon", ratingMin : 5000, picturePath: "https://static.csstats.gg/images/ranks/cs2/rating.uncommon.png"),
-                _rankFactory.Create(name: "Rare", ratingMin : 10000, picturePath: "https://static.csstats.gg/images/ranks/cs2/rating.rare.png"),
-                _rankFactory.Create(name: "Mythical", ratingMin : 15000, picturePath: "https://static.csstats.gg/images/ranks/cs2/rating.mythical.png"),
-                _rankFactory.Create(name: "Legendary", ratingMin : 20000, picturePath: "https://static.csstats.gg/images/ranks/cs2/rating.legendary.png"),
-                _rankFactory.Create(name: "Ancient", ratingMin : 25000, picturePath: "https://static.csstats.gg/images/ranks/cs2/rating.ancient.png"),
-                _rankFactory.Create(name: "Unusual", ratingMin : 30000, picturePath: "https://static.csstats.gg/images/ranks/cs2/rating.unusual.png"),
+                ("Common", 0, "https://static.csstats.gg/images/ranks/cs2/rating.common.png"),
+                ("Uncommon", 5000, "https://static.csstats.gg/images/ranks/cs2/rating.uncommon.png"),
+                ("Rare", 10000, "https://static.csstats.gg/images/ranks/cs2/rating.rare.png"),
+                ("Mythical", 15000, "https://static.csstats.gg/images/ranks/cs2/rating.mythical.png"),
+                ("Legendary", 20000, "https://static.csstats.gg/images/ranks/cs2/rating.legendary.png"),
+                ("Ancient", 25000, "https://static.csstats.gg/images/ranks/cs2/rating.ancient.png"),
+                ("Unusual", 30000, "https://static.csstats.gg/images/ranks/cs2/rating.unusual.png"),
             };
 
-            _context.Rank.AddRange(ranks);
-            _context.SaveChanges();
+            var existingRankNames = _context.Rank.Select(r => r.Name).ToHashSet();
+            
+            var newRanks = ranksToSeed
+                .Where(r => !existingRankNames.Contains(r.name))
+                .Select(r => _rankFactory.Create(name: r.name, ratingMin: r.ratingMin, picturePath: r.picturePath))
+                .ToList();
+
+            if (newRanks.Any())
+            {
+                _context.Rank.AddRange(newRanks);
+                _context.SaveChanges();
+            }
         }
     }
 }
