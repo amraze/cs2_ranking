@@ -2,9 +2,9 @@
     <h3 class="header mb-2 fw-bold">
         <span>Statistics</span>
         <span class="px-2">•</span>
-        <select class="px-2" (change)="selectSeason($event)">
+        <select class="px-2" [(ngModel)]="selectedSeasonId" (change)="selectSeason($event)">
             <option value="0">All Time</option>
-            <option *ngFor="let season of seasons; index as i" [value]="season?.id">Season {{i+1}} </option>
+            <option *ngFor="let season of seasons; index as i" [value]="season?.id">Season {{i+1}}</option>
         </select>
     </h3>
     <div class="section-container">

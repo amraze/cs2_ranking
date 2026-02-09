@@ -8,10 +8,11 @@ import { SharedImports } from '../../shared/shared-imports';
 import { Season } from '../../core/models/season.interface';
 import { Map } from '../../core/models/map.interface';
 import { MapPerformanceResponseDto } from '../../core/models/map-performance-response-dto';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-stats',
-  imports: [MapPerformance, GlobalStats, Evolution, SharedImports],
+  imports: [MapPerformance, GlobalStats, Evolution, SharedImports, FormsModule],
   templateUrl: './stats.html',
   styleUrl: './stats.scss'
 })
@@ -20,12 +21,12 @@ export class Stats implements OnInit {
   seasons: Season[] = [];
   mapPerformance: { [id: string]: MapPerformanceResponseDto } = {};
   selectedSeason: Season | null = null;
+  selectedSeasonId: string = '0';
   constructor(private _mapService: MapService, private _seasonService: SeasonService) { }
 
   ngOnInit(): void {
     this.getMaps();
     this.getSeasons();
-    this.getMapPerformance();
   }
 
   getMaps(): void {
@@ -38,6 +39,14 @@ export class Stats implements OnInit {
   getSeasons(): void {
     this._seasonService.getSeasons().subscribe(response => {
       this.seasons = response;
+
+      if (this.seasons && this.seasons.length > 0) {
+        const lastSeason = this.seasons[this.seasons.length - 1];
+        this.selectedSeasonId = lastSeason.id.toString();
+        this.selectedSeason = lastSeason;
+      }
+
+      this.getMapPerformance();
     })
   }
 
@@ -61,6 +70,8 @@ export class Stats implements OnInit {
   }
 
   handleSeasonChange(value: string): void {
+    this.selectedSeasonId = value;
+
     this.selectedSeason = this.seasons.find(
       season => season.id === parseInt(value, 10)
     ) ?? null;

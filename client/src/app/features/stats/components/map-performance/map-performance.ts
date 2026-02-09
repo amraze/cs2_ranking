@@ -28,4 +28,9 @@ export class MapPerformance {
   selectMap(map: Map) {
     this.selectedMapSignal.set(map);
   }
+
+  hasMapPerformanceData(): boolean {
+    console.log(Object.keys(this.mapPerformance).length);
+    return Object.keys(this.mapPerformance).length > 0;
+  }
 }
