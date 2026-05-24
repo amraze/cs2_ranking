@@ -38,9 +38,9 @@ namespace CS2Ranking.Application.Services
             await _matchRepository.AddRangeAsync(matches);
         }
 
-        public async Task<bool> ImportFromScopeAsync(string scopeSessionId)
+        public async Task<bool> ImportFromScopeAsync()
         {
-            var response = await _scopeGGService.GetScopeGGDataAsync(scopeSessionId);
+            var response = await _scopeGGService.GetScopeGGDataAsync();
             var matches = new List<Match>();
 
             foreach (var scopeMatch in response)

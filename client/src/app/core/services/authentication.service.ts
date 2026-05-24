@@ -13,14 +13,9 @@ export class AuthenticationService {
 
   constructor(private http: HttpClient, private tokenService: TokenService) { }
 
-  login(credentials: { email: string; password: string; scope_gg_session: string }): Observable<AuthResponse> {
+  login(credentials: { email: string; password: string; scopeSessionId: string }): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${environment.apiAuthUrl}/login`, credentials).pipe(
-      tap(response => {
-        this.handleResponse(response);
-        if (response.success) {
-          this.tokenService.setScopeGgSession(credentials.scope_gg_session);
-        }
-      })
+      tap(response => this.handleResponse(response))
     );
   }
 

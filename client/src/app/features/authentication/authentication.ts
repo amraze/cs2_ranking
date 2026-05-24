@@ -28,7 +28,7 @@ export class Authentication implements OnInit {
       this.authForm = this.formBuilder.group({
         email: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, Validators.minLength(6)]],
-        scope_gg_session: ['', [Validators.required]]
+        scopeSessionId: ['', [Validators.required]]
       });
     } else {
       this.authForm = this.formBuilder.group({

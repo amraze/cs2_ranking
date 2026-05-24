@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { map, Observable, of, tap } from 'rxjs';
 import { EvolutionResponseDto } from '../models/evolution-response-dto';
 import { CacheManager } from '../../shared/utils/cache-manager';
@@ -53,10 +53,8 @@ export class MatchService {
   }
 
   importScopeMatches(): Observable<boolean> {
-    const session = this.tokenService.getScopeGgSession() ?? '';
-    const headers = new HttpHeaders({ 'X-Scope-Session': session });
     return this.http
-      .get<void>(`${this.url}/import/scope`, { observe: 'response', headers })
+      .get<void>(`${this.url}/import/scope`, { observe: 'response' })
       .pipe(
         map(response => response.status === 204)
       );

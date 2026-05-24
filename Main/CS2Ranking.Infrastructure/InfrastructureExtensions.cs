@@ -9,6 +9,7 @@ namespace CS2Ranking.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
+            services.AddHttpContextAccessor();
             services.AddScoped<IMatchRepository, MatchRepository>();
             services.AddScoped<IMapRepository, MapRepository>();
             services.AddScoped<IRankRepository, RankRepository>();

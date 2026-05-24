@@ -9,4 +9,6 @@ public class LoginDto
 
     [Required]
     public string Password { get; set; } = string.Empty;
+
+    public string? ScopeSessionId { get; set; }
 }

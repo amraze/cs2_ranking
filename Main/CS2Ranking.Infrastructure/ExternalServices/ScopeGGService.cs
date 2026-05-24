@@ -1,27 +1,29 @@
 ﻿using CS2Ranking.Application.Dtos.ExternalDtos;
 using CS2Ranking.Application.Interfaces.IRepositories;
 using CS2Ranking.Infrastructure.ExternalModels;
+using Microsoft.AspNetCore.Http;
+using System.Net;
 using System.Net.Http.Json;
 
-/// <summary>
-/// External service responsible for automative fetching data from ScopeGG
-/// </summary>
 namespace CS2Ranking.Infrastructure.ExternalServices
 {
-    public class ScopeGGService(HttpClient httpClient, IMatchRepository matchRepository) : IScopeGGService
+    public class ScopeGGService(HttpClient httpClient, IMatchRepository matchRepository, IHttpContextAccessor httpContextAccessor) : IScopeGGService
     {
         private readonly HttpClient _httpClient = httpClient;
         private readonly IMatchRepository _matchRepository = matchRepository;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
-        public async Task<List<ScopeGGResponseDto>> GetScopeGGDataAsync(string scopeSessionId)
+        public async Task<List<ScopeGGResponseDto>> GetScopeGGDataAsync()
         {
             try
             {
+                var sessionId = _httpContextAccessor.HttpContext?.User.FindFirst("scope_session_id")?.Value;
+                if (string.IsNullOrEmpty(sessionId))
+                    return new List<ScopeGGResponseDto>();
+
                 var matches = await _matchRepository.GetAllAsync();
                 var offset = matches.Count();
                 var limit = 15;
-
-                var sessionId = scopeSessionId;
 
                 var requestDto = new ScopeGGRequestDto
                 {
@@ -43,7 +45,6 @@ namespace CS2Ranking.Infrastructure.ExternalServices
 
                 return await response.Content.ReadFromJsonAsync<List<ScopeGGResponseDto>>();
             }
-
             catch (HttpRequestException ex)
             {
                 Console.WriteLine($"ScopeGG unreachable: {ex.Message}");

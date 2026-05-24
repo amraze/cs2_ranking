@@ -43,6 +43,9 @@ public class TokenService : ITokenService
         if (!string.IsNullOrEmpty(user.LastName))
             claims.Add(new Claim(ClaimTypes.Surname, user.LastName));
 
+        if (!string.IsNullOrEmpty(user.ScopeSessionId))
+            claims.Add(new Claim("scope_session_id", user.ScopeSessionId));
+
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 

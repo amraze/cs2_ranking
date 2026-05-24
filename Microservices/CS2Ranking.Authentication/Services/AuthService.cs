@@ -59,6 +59,9 @@ public class AuthService : IAuthService
         var isPasswordValid = await _userManager.CheckPasswordAsync(user, dto.Password);
         if (!isPasswordValid) return new AuthResponseDto { Success = false, Message = "Invalid email or password", Token = null };
 
+        if (!string.IsNullOrEmpty(dto.ScopeSessionId))
+            user.ScopeSessionId = dto.ScopeSessionId;
+
         var token = await _tokenService.GenerateTokensAsync(user);
         await _userManager.UpdateAsync(user);
 
