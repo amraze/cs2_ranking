@@ -4,6 +4,6 @@ namespace CS2Ranking.Application.Interfaces.IRepositories
 {
     public interface IScopeGGService
     {
-        Task<List<ScopeGGResponseDto>> GetScopeGGDataAsync();
+        Task<List<ScopeGGResponseDto>> GetScopeGGDataAsync(string scopeSessionId);
     }
 }

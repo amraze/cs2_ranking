@@ -20,7 +20,7 @@ namespace CS2Ranking.Infrastructure.Startup
             var _mapService = scope.ServiceProvider.GetRequiredService<IMapService>();
             var _rankService = scope.ServiceProvider.GetRequiredService<IRankService>();
             var _ggService = scope.ServiceProvider.GetRequiredService<IScopeGGService>();
-            var response = await _ggService.GetScopeGGDataAsync();
+            var response = await _ggService.GetScopeGGDataAsync(string.Empty);
             var matches = new List<Match>();
 
             foreach (var scopeMatch in response)

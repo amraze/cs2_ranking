@@ -78,6 +78,22 @@
                     </div>
                 </div>
 
+                @if (isLogin) {
+                <div class="form-group">
+                    <label class="form-label">Scope GG Session</label>
+                    <input type="text" class="form-input" formControlName="scope_gg_session"
+                        placeholder="Enter your Scope GG session ID"
+                        [class.invalid]="submitted && f['scope_gg_session'].errors">
+                    @if (submitted && f['scope_gg_session'].errors) {
+                    <div class="error-message">
+                        @if (f['scope_gg_session'].errors['required']) {
+                        <span>Scope GG Session is required</span>
+                        }
+                    </div>
+                    }
+                </div>
+                }
+
                 <button type="submit" class="submit-btn">
                     {{ isLogin ? 'Login' : 'Create Account' }}
                 </button>

@@ -1,7 +1,6 @@
 ﻿using CS2Ranking.Application.Dtos.ExternalDtos;
 using CS2Ranking.Application.Interfaces.IRepositories;
 using CS2Ranking.Infrastructure.ExternalModels;
-using Microsoft.Extensions.Configuration;
 using System.Net.Http.Json;
 
 /// <summary>
@@ -9,13 +8,12 @@ using System.Net.Http.Json;
 /// </summary>
 namespace CS2Ranking.Infrastructure.ExternalServices
 {
-    public class ScopeGGService(HttpClient httpClient, IConfiguration config, IMatchRepository matchRepository) : IScopeGGService
+    public class ScopeGGService(HttpClient httpClient, IMatchRepository matchRepository) : IScopeGGService
     {
         private readonly HttpClient _httpClient = httpClient;
-        private readonly IConfiguration _config = config;
         private readonly IMatchRepository _matchRepository = matchRepository;
 
-        public async Task<List<ScopeGGResponseDto>> GetScopeGGDataAsync()
+        public async Task<List<ScopeGGResponseDto>> GetScopeGGDataAsync(string scopeSessionId)
         {
             try
             {
@@ -23,7 +21,7 @@ namespace CS2Ranking.Infrastructure.ExternalServices
                 var offset = matches.Count();
                 var limit = 15;
 
-                var sessionId = _config["ScopeGG:ScopeSessionId"];
+                var sessionId = scopeSessionId;
 
                 var requestDto = new ScopeGGRequestDto
                 {

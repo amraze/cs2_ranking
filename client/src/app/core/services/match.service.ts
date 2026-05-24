@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { map, Observable, of, tap } from 'rxjs';
 import { EvolutionResponseDto } from '../models/evolution-response-dto';
 import { CacheManager } from '../../shared/utils/cache-manager';
 import { Match } from '../models/match.interface';
 import { environment } from '../../../environment';
+import { TokenService } from './token.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class MatchService {
   private cacheManager = new CacheManager<Match[][]>();
   private statsCacheManager = new CacheManager<EvolutionResponseDto[]>();
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private tokenService: TokenService) { }
 
   getMatches(limit: number, offset: number): Observable<Match[][]> {
     const key = this.cacheManager.generateKey({
@@ -52,8 +53,10 @@ export class MatchService {
   }
 
   importScopeMatches(): Observable<boolean> {
+    const session = this.tokenService.getScopeGgSession() ?? '';
+    const headers = new HttpHeaders({ 'X-Scope-Session': session });
     return this.http
-      .get<void>(`${this.url}/import/scope`, { observe: 'response' })
+      .get<void>(`${this.url}/import/scope`, { observe: 'response', headers })
       .pipe(
         map(response => response.status === 204)
       );

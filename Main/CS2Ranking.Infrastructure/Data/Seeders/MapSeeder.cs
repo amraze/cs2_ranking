@@ -21,6 +21,7 @@ namespace CS2Ranking.Infrastructure.Data.Seeders
                 ("de_nuke", "https://app.scope.gg/static/records/de_nuke.webp", "https://scope-cs2-radars-dev.s3.eu-central-1.amazonaws.com/de_nuke/3113460509.svg"),
                 ("de_overpass", "https://app.scope.gg/static/records/de_overpass.webp", "https://scope-cs2-radars-dev.s3.eu-central-1.amazonaws.com/de_overpass/4249751265.svg"),
                 ("de_ancient", "https://app.scope.gg/static/records/de_ancient.webp", "https://scope-cs2-radars-dev.s3.eu-central-1.amazonaws.com/de_ancient/2150053253.svg"),
+                ("de_cache", "https://app.scope.gg/static/records/de_cache.webp", "https://scope-cs2-radars-dev.s3.eu-central-1.amazonaws.com/de_cache/2150053253.svg"),
             };
 
             var existingMapNames = _context.Map.Select(m => m.Name).ToHashSet();

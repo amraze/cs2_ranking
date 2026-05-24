@@ -15,7 +15,8 @@ namespace CS2Ranking.Api.Controllers
         {
             try
             {
-                var hasInserted = await _matchService.ImportFromScopeAsync();
+                var scopeSessionId = Request.Headers["X-Scope-Session"].ToString();
+                var hasInserted = await _matchService.ImportFromScopeAsync(scopeSessionId);
                 if (!hasInserted)
                     return NoContent(); 
 
